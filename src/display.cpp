@@ -1,8 +1,3 @@
-#include <SPI.h>
-#include <Wire.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
-
 #include "display.h"
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
@@ -29,38 +24,18 @@ void Init_Display()
     
     // Clear the buffer
     display.clearDisplay();
+
+    Serial.println("Display initialized.");
 }
 
-// run
-void Run_Display()
+// show text
+void ShowText_Display(String text)
 {
-    testscrolltext();
-}
-
-/// FUNCTIONS
-void testscrolltext(void) {
     display.clearDisplay();
-
     display.setTextSize(2); // Draw 2X-scale text
     display.setTextColor(WHITE);
     display.setCursor(10, 0);
-    display.println(F("scroll"));
+    display.println(text);
     display.display();      // Show initial text
     delay(100);
-
-    // Scroll in various directions, pausing in-between:
-    display.startscrollright(0x00, 0x0F);
-    delay(2000);
-    display.stopscroll();
-    delay(1000);
-    display.startscrollleft(0x00, 0x0F);
-    delay(2000);
-    display.stopscroll();
-    delay(1000);
-    display.startscrolldiagright(0x00, 0x07);
-    delay(2000);
-    display.startscrolldiagleft(0x00, 0x07);
-    delay(2000);
-    display.stopscroll();
-    delay(1000);
 }
