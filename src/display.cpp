@@ -22,9 +22,9 @@ void ShowText_Display(String text)
   display.clear();
 
   display.setColor(WHITE);
-  display.setTextAlignment(TEXT_ALIGN_CENTER);
-  display.drawString(64, 15, text);
-  display.setFont(ArialMT_Plain_24);
+  display.setTextAlignment(TEXT_ALIGN_LEFT);
+  display.drawString(15, 15, text);
+  display.setFont(ArialMT_Plain_16);
 
   display.display();
 }
