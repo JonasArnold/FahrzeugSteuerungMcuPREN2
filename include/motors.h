@@ -3,4 +3,4 @@
 void Init_Motors(void);
 void Deinit_Motors(void);
 
-void Forward(int);
+void Forward_Motors(int);

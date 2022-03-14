@@ -5,4 +5,6 @@
 
 // declaration
 void Init_Display();
-void ShowText_Display(String);
+
+void ShowText_Display(int16_t, int16_t, String);
+void Clear_Display();

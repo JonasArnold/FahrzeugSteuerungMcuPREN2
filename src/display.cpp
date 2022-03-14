@@ -17,14 +17,17 @@ void Init_Display()
 }
 
 // show text
-void ShowText_Display(String text)
+void ShowText_Display(int16_t posX, int16_t posY, String text)
 {
-  display.clear();
-
   display.setColor(WHITE);
   display.setTextAlignment(TEXT_ALIGN_LEFT);
-  display.drawString(15, 15, text);
-  display.setFont(ArialMT_Plain_16);
+  display.drawString(posX, posY, text);
+  display.setFont(ArialMT_Plain_10);
 
   display.display();
+}
+
+void Clear_Display()
+{
+  display.clear();
 }

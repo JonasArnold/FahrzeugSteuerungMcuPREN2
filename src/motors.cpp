@@ -40,9 +40,9 @@ void Deinit_Motors()
     motorR.detach();
 }
 
-void Forward(int percent)
+void Forward_Motors(int percent)
 {
-    motorL.write(map(percent, 0, 100, 90, 150));
-    motorR.write(map(percent, 0, 100, 90, 150));
+    motorL.write(map(percent, 0, 100, 98, 110));
+    motorR.write(map(percent, 0, 100, 98, 110));
 }
 

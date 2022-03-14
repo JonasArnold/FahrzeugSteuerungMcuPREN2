@@ -5,25 +5,43 @@
 #include "motors.h"
 
 uint16_t sensorValue = 0;
+uint16_t potValueAnalog, potValPct;
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
   Init_Display();
   Init_CoilSensor();
-  ShowText_Display(String("Initializing motors..."));
+
+  ShowText_Display(15, 15, String("Initializing motors..."));
   Init_Motors();
-  ShowText_Display(String("Init done"));
+
+  Clear_Display();
+  ShowText_Display(15, 15, String("Init done"));
+
   delay(2000);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  // read coil sensor
   sensorValue = Read_CoilSensor();
   SerialPrintLnAndVal("Read sensor value: ", sensorValue);
-  ShowText_Display(String(sensorValue));
+
+  // read poti
+  potValueAnalog = analogRead(14);
+  potValPct = map(potValueAnalog, 0, 4095, 0, 100);
+  // set motor speed
+  Forward_Motors(potValPct);
   
-  Forward(20);
-  
+
+  // update display
+  Clear_Display();
+  ShowText_Display(15, 15, String("Coil L val:"));
+  ShowText_Display(80, 15, String(sensorValue));
+  ShowText_Display(15, 40, String("Motors pct:"));
+  ShowText_Display(80, 40, String(potValPct));
+
+
+
   delay(50);
 }
