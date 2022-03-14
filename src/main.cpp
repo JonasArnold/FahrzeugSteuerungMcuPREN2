@@ -23,6 +23,10 @@ void setup() {
 }
 
 void loop() {
+
+  // handle all periodic stuff
+  Handle_Motors();
+
   // read coil sensor
   sensorValue = Read_CoilSensor();
   SerialPrintLnAndVal("Read sensor value: ", sensorValue);
