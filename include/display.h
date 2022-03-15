@@ -1,15 +1,14 @@
-#ifndef _DISPLAY_H_
-#define _DISPLAY_H_
+#ifndef DISPLAY_H_
+#define DISPLAY_H_
 
 #include <Arduino.h>
-#include <SPI.h>
-#include <Wire.h>               // Only needed for Arduino 1.6.5 and earlier
-#include "SSD1306Wire.h"        // legacy: #include "SSD1306.h"
 
-// declaration
-void Init_Display();
+/* initialization */
+void Display_Init();
 
-void ShowText_Display(int16_t, int16_t, String);
-void Clear_Display();
+/* Show a text on the display, x, y, text */
+void Display_ShowText(int16_t, int16_t, String);
+/* clear complete content of display */
+void Display_Clear();
 
 #endif

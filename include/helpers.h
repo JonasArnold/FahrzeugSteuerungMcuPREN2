@@ -1,8 +1,9 @@
-#ifndef _HELPERS_H_
-#define _HELPERS_H_
+#ifndef HELPERS_H_
+#define HELPERS_H_
 
 #include <Arduino.h>
 
-void SerialPrintLnAndVal(String, uint16_t);
+/* prints a description + value line to the serial monitor */
+void Helpers_SerialPrintLnAndVal(String, uint16_t);
 
 #endif

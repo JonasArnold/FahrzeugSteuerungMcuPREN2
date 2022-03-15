@@ -10,14 +10,14 @@ uint16_t potValueAnalog, potValPct;
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
-  Init_Display();
-  Init_CoilSensor();
+  Display_Init();
+  CoilSensor_Init();
 
-  ShowText_Display(15, 15, String("Initializing motors..."));
-  Init_Motors();
+  Display_ShowText(15, 15, String("Initializing motors..."));
+  Motors_Init();
 
-  Clear_Display();
-  ShowText_Display(15, 15, String("Init done"));
+  Display_Clear();
+  Display_ShowText(15, 15, String("Init done"));
 
   delay(2000);
 }
@@ -25,25 +25,25 @@ void setup() {
 void loop() {
 
   // handle all periodic stuff
-  Handle_Motors();
+  Motors_Handle();
 
   // read coil sensor
-  sensorValue = Read_CoilSensor();
-  SerialPrintLnAndVal("Read sensor value: ", sensorValue);
+  sensorValue = CoilSensor_Read();
+  Helpers_SerialPrintLnAndVal("Read sensor value: ", sensorValue);
 
   // read poti
   potValueAnalog = analogRead(14);
   potValPct = map(potValueAnalog, 0, 4095, 0, 100);
   // set motor speed
-  Forward_Motors(potValPct);
+  Motors_Forward(potValPct);
   
 
   // update display
-  Clear_Display();
-  ShowText_Display(15, 15, String("Coil L val:"));
-  ShowText_Display(80, 15, String(sensorValue));
-  ShowText_Display(15, 40, String("Motors pct:"));
-  ShowText_Display(80, 40, String(potValPct));
+  Display_Clear();
+  Display_ShowText(15, 15, String("Coil L val:"));
+  Display_ShowText(80, 15, String(sensorValue));
+  Display_ShowText(15, 40, String("Motors pct:"));
+  Display_ShowText(80, 40, String(potValPct));
 
 
 

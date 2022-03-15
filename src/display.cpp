@@ -1,11 +1,12 @@
 #include "display.h"
-
+#include <SPI.h>
+#include <Wire.h>               // Only needed for Arduino 1.6.5 and earlier
+#include "SSD1306Wire.h"        // legacy: #include "SSD1306.h"
 
 // Initialize the OLED display using Arduino Wire:
 SSD1306Wire display(0x3c, 5, 4);
 
-// init
-void Init_Display()
+void Display_Init()
 {
   // Initialising the UI will init the display too.
   display.init();
@@ -16,8 +17,7 @@ void Init_Display()
   Serial.println("Display initialized.");
 }
 
-// show text
-void ShowText_Display(int16_t posX, int16_t posY, String text)
+void Display_ShowText(int16_t posX, int16_t posY, String text)
 {
   display.setColor(WHITE);
   display.setTextAlignment(TEXT_ALIGN_LEFT);
@@ -27,7 +27,7 @@ void ShowText_Display(int16_t posX, int16_t posY, String text)
   display.display();
 }
 
-void Clear_Display()
+void Display_Clear()
 {
   display.clear();
 }

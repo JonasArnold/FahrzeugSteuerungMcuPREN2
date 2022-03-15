@@ -1,12 +1,17 @@
-#ifndef _MOTORS_H_
-#define _MOTORS_H_
+#ifndef MOTORS_H_
+#define MOTORS_H_
 
-#include <ESP32Servo.h>
+#include <Arduino.h>
 
-void Init_Motors(void);
-void Deinit_Motors(void);
-void Handle_Motors(void);
+/* initialization */
+void Motors_Init(void);
+/* de-initialization */
+void Motors_Deinit(void);
+/* handle internal stuff, function to call in super loop (peridocally) */
+void Motors_Handle(void);
 
-void Forward_Motors(int);
+
+/* move device forward, int = rpm */ 
+void Motors_Forward(int);
 
 #endif

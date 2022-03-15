@@ -1,4 +1,5 @@
 #include "motors.h"
+#include <ESP32Servo.h>
 
 // define min / max microseconds on time for servo signal
 #define MIN_US 1000
@@ -23,7 +24,11 @@ unsigned long lastRpmCalculation = 0;       // stores last rpm calculation milli
 
 int RPM_L, RPM_R;
 
-void Init_Motors()
+// internal function declaration
+void ISR_RPM_L(void);
+void ISR_RPM_R(void);
+
+void Motors_Init()
 {
 	// Allow allocation of all timers
 	ESP32PWM::allocateTimer(0);
@@ -49,16 +54,14 @@ void Init_Motors()
     attachInterrupt(digitalPinToInterrupt(rpm_meter_R_Pin), ISR_RPM_R, RISING);
 }
 
-void Deinit_Motors()
+void Motors_Deinit()
 {
     // detach motors
     motorL.detach();
     motorR.detach();
 }
 
-// function to call periodically!
-// handles rpm meter of motors
-void Handle_Motors()
+void Motors_Handle()
 {
     unsigned long now = millis();
     // perform rpm calculation if it is overdue
@@ -77,7 +80,7 @@ void Handle_Motors()
 
 /* Functions */
 
-void Forward_Motors(int percent)
+void Motors_Forward(int percent)
 {
     motorL.write(map(percent, 0, 100, 98, 110));
     motorR.write(map(percent, 0, 100, 98, 110));

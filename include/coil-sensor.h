@@ -1,9 +1,12 @@
-#ifndef _COIL_SENSOR_H_
-#define _COIL_SENSOR_H_
+#ifndef COIL_SENSOR_H_
+#define COIL_SENSOR_H_
 
 #include <Arduino.h>
 
-void Init_CoilSensor(void);
-uint16_t Read_CoilSensor();
+/* initialization */
+void CoilSensor_Init(void);
+
+/* read the coil sensor value, returned: difference between L & R sensor */
+uint16_t CoilSensor_Read();
 
 #endif
