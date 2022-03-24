@@ -27,7 +27,7 @@ void setup() {
   delay(2000);
 
   // TEST_I2C VAR
-  state = 1; batteryLevel = 3; speed = 5;
+  set_state(1); set_batteryLevel(3);; set_speed(5);;
 }
 
 void loop() {
@@ -40,9 +40,9 @@ void loop() {
   }
 
   // Test_I2C START
-  state++;
-  batteryLevel++;
-  speed++;
+  set_state(get_state() + 1);
+  set_batteryLevel(get_batteryLevel() + 1);
+  set_speed(get_speed() + 1);
   delay(2000);
   // TEST_I2C END
   
