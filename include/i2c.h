@@ -5,10 +5,6 @@
 
 void I2C_Init(void);
 
-void receiveData(int byteCount);
-
-void sendData(void);
-
 int I2C_Handle(void);
 
 int get_state(void);
