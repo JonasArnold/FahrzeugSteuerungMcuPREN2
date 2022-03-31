@@ -16,16 +16,16 @@ void setup() {
   CoilSensor_Init();
 
   Display_ShowText(15, 15, String("Initializing I2C..."));
-  delay(2000);
   I2C_Init();
-/*
+
+  Display_Clear();
   Display_ShowText(15, 15, String("Initializing motors..."));
   Motors_Init();
-*/
+
   Display_Clear();
   Display_ShowText(15, 15, String("Init done"));
-
   delay(2000);
+  Display_Clear();
 
   // TEST_I2C VAR
   set_state(1); set_batteryLevel(0);; set_speed(1000);;
@@ -43,7 +43,7 @@ void loop() {
 
   /* update outgoing data (state / batteryLevel / speed) */
   // Test_I2C
-  set_state(get_state() + 1);
+  set_state(DeviceState::Ready);
   set_batteryLevel(get_batteryLevel() + 2);
   set_speed(get_speed());
   delay(2000);

@@ -3,12 +3,22 @@
 
 #include <Arduino.h>
 
+enum DeviceState{Unknown, Initializing, Ready, Driving, Stopped, Finished};
+
+enum Command
+{
+    None = 0, 
+    SpeedFast = 1, 
+    SpeedSlow = 2, 
+    Stop = 3
+};
+
 void I2C_Init(void);
 
 int I2C_Handle(void);
 
-int get_state(void);
-void set_state(int);
+DeviceState get_state(void);
+void set_state(DeviceState);
 
 int get_batteryLevel(void);
 void set_batteryLevel(int);

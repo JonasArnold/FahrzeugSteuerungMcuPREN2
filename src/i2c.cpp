@@ -8,8 +8,8 @@
 #define I2C_SLAVE_ADDR 0x40           // I2C Adresse vom Slave (ESP32)
 
 // vars
-int command = 0;                      // Befehl; no_command = 0 / speed_up = 1 / speed_down = 2 / stopp = 3
-byte state;
+enum Command command = Command::None;
+DeviceState state;
 byte batteryLevel;
 byte speed;
 
@@ -18,10 +18,7 @@ static void receiveData(int byteCount);
 static void sendData(void);
 
 void I2C_Init() {
-    //Wire1.end();    
     bool res = Wire1.begin((uint8_t)I2C_SLAVE_ADDR, SDA_PIN, SCL_PIN, 400000);
-    Wire1.onReceive(receiveData);
-    Wire1.onRequest(sendData);
     if (!res) {
         Serial.println("I2C slave init failed");
         Display_Clear();
@@ -29,17 +26,20 @@ void I2C_Init() {
         while(1) delay(100);
     }
 
+    Wire1.onReceive(receiveData);
+    Wire1.onRequest(sendData);
+
     Serial.println("I2C slave init done");
     Display_Clear();
     Display_ShowText(15, 15, String("I2C slave init done"));
     delay(2000);
 }
 
-int I2C_Handle() {                    // Befehl; no_command = 0 / speed_up = 1 / speed_down = 2 / stopp = 3
-
-    if(command!=0) {
+int I2C_Handle()        // Befehl; no_command = 0 / speed_up = 1 / speed_down = 2 / stopp = 3
+{                    
+    if(command != Command::None) {
         int command_out = command;
-        command = 0;
+        command = Command::None;
         return command_out;
     }
     return command;
@@ -52,7 +52,7 @@ int I2C_Handle() {                    // Befehl; no_command = 0 / speed_up = 1 /
 // send inside here.
 static void sendData() {
 
-    byte data [] = {state, batteryLevel, speed};
+    byte data [] = {(byte)state, batteryLevel, speed};
     Wire1.write(data, 3);
 }
 
@@ -62,18 +62,18 @@ static void sendData() {
 static void receiveData(int howMany) {
 
     if(Wire1.available()) {
-        command = Wire1.read();
+        command = (Command)Wire1.read();
         Wire1.flush();
         Serial.println("Data received");
     }
 }
 
 // getters & setters
-int get_state() {
+DeviceState get_state() {
 
     return state;
 }
-void set_state(int x) {
+void set_state(DeviceState x) {
 
     state = x;
 }
