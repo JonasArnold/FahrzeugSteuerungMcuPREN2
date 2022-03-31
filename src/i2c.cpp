@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include "i2c.h"
+#include "display.h"
 
 #define SDA_PIN 25
 #define SCL_PIN 26
@@ -17,16 +18,21 @@ static void receiveData(int byteCount);
 static void sendData(void);
 
 void I2C_Init() {
-    Wire.setPins(SDA_PIN, SCL_PIN);
-    Wire.onReceive(receiveData);
-    Wire.onRequest(sendData);
-    bool res = Wire.begin((uint8_t)I2C_SLAVE_ADDR);
+    //Wire1.end();    
+    bool res = Wire1.begin((uint8_t)I2C_SLAVE_ADDR, SDA_PIN, SCL_PIN, 400000);
+    Wire1.onReceive(receiveData);
+    Wire1.onRequest(sendData);
     if (!res) {
         Serial.println("I2C slave init failed");
+        Display_Clear();
+        Display_ShowText(15, 15, String("I2C slave init failed"));
         while(1) delay(100);
     }
 
     Serial.println("I2C slave init done");
+    Display_Clear();
+    Display_ShowText(15, 15, String("I2C slave init done"));
+    delay(2000);
 }
 
 int I2C_Handle() {                    // Befehl; no_command = 0 / speed_up = 1 / speed_down = 2 / stopp = 3
@@ -47,7 +53,7 @@ int I2C_Handle() {                    // Befehl; no_command = 0 / speed_up = 1 /
 static void sendData() {
 
     byte data [] = {state, batteryLevel, speed};
-    Wire.write(data, 3);
+    Wire1.write(data, 3);
 }
 
 // function that executes whenever a complete and valid packet
@@ -55,9 +61,10 @@ static void sendData() {
 // this function is registered as an event, see setup()
 static void receiveData(int howMany) {
 
-    if(Wire.available()) {
-        command = Wire.read();
-        Wire.flush();
+    if(Wire1.available()) {
+        command = Wire1.read();
+        Wire1.flush();
+        Serial.println("Data received");
     }
 }
 

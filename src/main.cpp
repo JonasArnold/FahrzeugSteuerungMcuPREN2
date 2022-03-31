@@ -11,23 +11,24 @@ uint8_t driveCommand;
 
 void setup() {
   // put your setup code here, to run once:
-  Serial.begin(9600);
+  Serial.begin(115200);
   Display_Init();
   CoilSensor_Init();
 
   Display_ShowText(15, 15, String("Initializing I2C..."));
+  delay(2000);
   I2C_Init();
-
+/*
   Display_ShowText(15, 15, String("Initializing motors..."));
   Motors_Init();
-
+*/
   Display_Clear();
   Display_ShowText(15, 15, String("Init done"));
 
   delay(2000);
 
   // TEST_I2C VAR
-  set_state(1); set_batteryLevel(3);; set_speed(5);;
+  set_state(1); set_batteryLevel(0);; set_speed(1000);;
 }
 
 void loop() {
@@ -37,13 +38,14 @@ void loop() {
   if(driveCommand) {
     /* transfer command immediately to drive controller */
     Display_ShowText(15, 15, String("Current command: " + driveCommand));
+    delay(5000); // NUR ZUM TESTEN!!!
   }
 
   /* update outgoing data (state / batteryLevel / speed) */
   // Test_I2C
   set_state(get_state() + 1);
-  set_batteryLevel(get_batteryLevel() + 1);
-  set_speed(get_speed() + 1);
+  set_batteryLevel(get_batteryLevel() + 2);
+  set_speed(get_speed());
   delay(2000);
   // TEST_I2C END
   
