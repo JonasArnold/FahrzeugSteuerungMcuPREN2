@@ -35,7 +35,7 @@ void I2C_Init() {
     delay(2000);
 }
 
-int I2C_Handle()        // Befehl; no_command = 0 / speed_up = 1 / speed_down = 2 / stopp = 3
+int I2C_Handle()
 {                    
     if(command != Command::None) {
         int command_out = command;

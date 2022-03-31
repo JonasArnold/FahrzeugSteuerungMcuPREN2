@@ -28,7 +28,7 @@ void setup() {
   Display_Clear();
 
   // TEST_I2C VAR
-  set_state(1); set_batteryLevel(0);; set_speed(1000);;
+  set_state(Ready); set_batteryLevel(0); set_speed(1000);
 }
 
 void loop() {
@@ -43,7 +43,7 @@ void loop() {
 
   /* update outgoing data (state / batteryLevel / speed) */
   // Test_I2C
-  set_state(DeviceState::Ready);
+  set_state(get_state());
   set_batteryLevel(get_batteryLevel() + 2);
   set_speed(get_speed());
   delay(2000);
