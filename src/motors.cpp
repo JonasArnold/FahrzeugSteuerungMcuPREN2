@@ -87,6 +87,18 @@ void Motors_Forward(int percent)
 }
 
 
+void Motors_ForwardAndSteering(uint8_t speed, int8_t steeringVal)
+{
+    uint8_t leftAmount = speed, rightAmount = speed;
+
+    leftAmount += 2*steeringVal;
+    rightAmount -= 2*steeringVal;
+
+    motorL.write(map(leftAmount, 0, 255, 98, 110));
+    motorR.write(map(rightAmount, 0, 255, 98, 110));
+}
+
+
 /* ISR */
 void ISR_RPM_L(void)
 {

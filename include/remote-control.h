@@ -6,6 +6,6 @@
 void RemoteControl_Init();
 
 uint8_t RemoteControl_GetThrottle();
-uint8_t RemoteControl_GetSteering();
+int8_t RemoteControl_GetSteering();
 
 #endif

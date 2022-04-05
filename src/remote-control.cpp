@@ -20,10 +20,9 @@ uint8_t RemoteControl_GetThrottle()
 }
 
 
-
-uint8_t RemoteControl_GetSteering()
+int8_t RemoteControl_GetSteering()
 {
     unsigned long steering = pulseIn(steeringPin, HIGH);
     Helpers_SerialPrintLnAndVal("Steering: ", steering);
-    return map( steering, 1080, 1930, 0, 255 );
+    return map( steering, 1080, 1930, -127, 127 );
 }

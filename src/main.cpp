@@ -7,7 +7,8 @@
 #include "remote-control.h"
 
 uint16_t sensorValue = 0;
-uint16_t potValueAnalog, potValPct;
+uint8_t speedVal;
+int8_t steeringVal;
 uint8_t driveCommand;
 
 void setup() {
@@ -16,9 +17,10 @@ void setup() {
   Display_Init();
   CoilSensor_Init();
 
+#ifdef COMMUNICATION_ENABLED
   Display_ShowText(15, 15, String("Initializing I2C..."));
-  //I2C_Init();
-
+  I2C_Init();
+#endif
 
   RemoteControl_Init();
 
@@ -37,6 +39,7 @@ void setup() {
 
 void loop() {
 
+#ifdef COMMUNICATION_ENABLED
   // handle all periodic stuff
   driveCommand = I2C_Handle();
   if(driveCommand) {
@@ -47,11 +50,12 @@ void loop() {
 
   /* update outgoing data (state / batteryLevel / speed) */
   // Test_I2C
-  //set_state(get_state());
-  //set_batteryLevel(get_batteryLevel() + 2);
-  //set_speed(get_speed());
-  //delay(2000);
+  set_state(get_state());
+  set_batteryLevel(get_batteryLevel() + 2);
+  set_speed(get_speed());
+  delay(2000);
   // TEST_I2C END
+#endif
   
   Motors_Handle();
 
@@ -59,20 +63,21 @@ void loop() {
   sensorValue = CoilSensor_Read();
   Helpers_SerialPrintLnAndVal("Read sensor value: ", sensorValue);
 
-  // read poti (motor test)
-  potValueAnalog = RemoteControl_GetThrottle();
-  RemoteControl_GetSteering();
-  Helpers_SerialPrintLnAndVal("Read pot value: ", potValueAnalog);
-  potValPct = map(potValueAnalog, 0, 255, 0, 100);
+  // get remote control data (motor test)
+  speedVal = RemoteControl_GetThrottle();
+  steeringVal = RemoteControl_GetSteering();
+
   // set motor speed
-  Motors_Forward(potValPct);  
+  Motors_ForwardAndSteering(speedVal, steeringVal);  
 
   // update display
   Display_Clear();
-  Display_ShowText(15, 15, String("Coil L val:"));
-  Display_ShowText(80, 15, String(sensorValue));
-  Display_ShowText(15, 40, String("Motors pct:"));
-  Display_ShowText(80, 40, String(potValPct));
-
+  Display_ShowText(15, 11, String("Coil L val:"));
+  Display_ShowText(80, 11, String(sensorValue));
+  Display_ShowText(15, 25, String("Motors speed:"));
+  Display_ShowText(80, 25, String(speedVal));
+  Display_ShowText(15, 39, String("Steering:"));
+  Display_ShowText(80, 39, String(steeringVal));
+  
   delay(50);
 }

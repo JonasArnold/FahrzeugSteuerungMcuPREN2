@@ -14,4 +14,10 @@ void Motors_Handle(void);
 /* move device forward, int = rpm */ 
 void Motors_Forward(int);
 
+/* move device forward with steering capability
+   speed: 0...255 speed
+   steeringVal: -127 ... +127 (amount left or right), negative is left
+*/
+void Motors_ForwardAndSteering(uint8_t speed, int8_t steeringVal);
+
 #endif
