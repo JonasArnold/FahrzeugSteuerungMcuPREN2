@@ -4,6 +4,7 @@
 #include "coil-sensor.h"
 #include "motors.h"
 #include "i2c.h"
+#include "remote-control.h"
 
 uint16_t sensorValue = 0;
 uint16_t potValueAnalog, potValPct;
@@ -16,7 +17,10 @@ void setup() {
   CoilSensor_Init();
 
   Display_ShowText(15, 15, String("Initializing I2C..."));
-  I2C_Init();
+  //I2C_Init();
+
+
+  RemoteControl_Init();
 
   Display_Clear();
   Display_ShowText(15, 15, String("Initializing motors..."));
@@ -43,10 +47,10 @@ void loop() {
 
   /* update outgoing data (state / batteryLevel / speed) */
   // Test_I2C
-  set_state(get_state());
-  set_batteryLevel(get_batteryLevel() + 2);
-  set_speed(get_speed());
-  delay(2000);
+  //set_state(get_state());
+  //set_batteryLevel(get_batteryLevel() + 2);
+  //set_speed(get_speed());
+  //delay(2000);
   // TEST_I2C END
   
   Motors_Handle();
@@ -56,8 +60,10 @@ void loop() {
   Helpers_SerialPrintLnAndVal("Read sensor value: ", sensorValue);
 
   // read poti (motor test)
-  potValueAnalog = analogRead(14);
-  potValPct = map(potValueAnalog, 0, 4095, 0, 100);
+  potValueAnalog = RemoteControl_GetThrottle();
+  RemoteControl_GetSteering();
+  Helpers_SerialPrintLnAndVal("Read pot value: ", potValueAnalog);
+  potValPct = map(potValueAnalog, 0, 255, 0, 100);
   // set motor speed
   Motors_Forward(potValPct);  
 
