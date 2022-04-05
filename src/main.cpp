@@ -32,6 +32,7 @@ void setup() {
   Display_ShowText(15, 15, String("Init done"));
   delay(2000);
   Display_Clear();
+  Display_SetupBase();
 
   // TEST_I2C VAR
   set_state(Ready); set_batteryLevel(0); set_speed(1000);

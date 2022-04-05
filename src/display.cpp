@@ -17,6 +17,13 @@ void Display_Init()
   Serial.println("Display initialized.");
 }
 
+void Display_SetupBase()
+{
+    display.drawHorizontalLine(0, 13, 128);
+    display.drawHorizontalLine(0, 27, 128);
+    display.drawHorizontalLine(0, 41, 128);
+}
+
 void Display_ShowText(int16_t posX, int16_t posY, String text)
 {
   display.setColor(WHITE);
