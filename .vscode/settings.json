@@ -5,6 +5,5 @@
         "istream": "cpp",
         "memory": "cpp",
         "typeinfo": "cpp"
-    },
-    "C_Cpp.errorSquiggles": "Disabled"
+    }
 }
