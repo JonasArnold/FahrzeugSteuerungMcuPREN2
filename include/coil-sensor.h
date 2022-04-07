@@ -7,6 +7,6 @@
 void CoilSensor_Init(void);
 
 /* read the coil sensor value, returned: difference between L & R sensor */
-uint16_t CoilSensor_Read();
+int16_t CoilSensor_Read();
 
 #endif

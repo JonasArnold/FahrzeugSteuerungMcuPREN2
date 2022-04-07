@@ -7,7 +7,10 @@
 void StartButton_Init(void);
 /* de-initialization */
 void StartButton_Deinit(void);
-/* handle internal stuff, function to call in super loop (peridocally) */
-int StartButton_Handle(void);
+
+
+/* gets the state of the button. 
+   returns: pressed = true, not pressed = false */
+bool StartButton_GetState(void);
 
 #endif

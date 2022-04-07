@@ -13,7 +13,7 @@ Servo motorR;
 // pins
 const int motorL_Pin = 12;
 const int motorR_Pin = 13;
-const int rpm_meter_L_Pin = 0;
+const int rpm_meter_L_Pin = 16;
 const int rpm_meter_R_Pin = 2;
 
 // vars
@@ -82,8 +82,8 @@ void Motors_Handle()
 
 void Motors_Forward(int percent)
 {
-    motorL.write(map(percent, 0, 100, 98, 110));
-    motorR.write(map(percent, 0, 100, 98, 110));
+    motorL.write(map(percent, 0, 100, 98, 170));
+    motorR.write(map(percent, 0, 100, 98, 170));
 }
 
 
@@ -91,11 +91,11 @@ void Motors_ForwardAndSteering(uint8_t speed, int8_t steeringVal)
 {
     uint8_t leftAmount = speed, rightAmount = speed;
 
-    leftAmount += 2*steeringVal;
-    rightAmount -= 2*steeringVal;
+    leftAmount += steeringVal;
+    rightAmount -= steeringVal;
 
-    motorL.write(map(leftAmount, 0, 255, 98, 180));
-    motorR.write(map(rightAmount, 0, 255, 98, 180));
+    motorL.write(map(leftAmount, 0, 255, 98, 170));
+    motorR.write(map(rightAmount, 0, 255, 98, 170));
 }
 
 
@@ -107,4 +107,15 @@ void ISR_RPM_L(void)
 void ISR_RPM_R(void)
 {
     flank_count_r++;
+}
+
+
+int16_t Motors_GetRpmL()
+{
+    return RPM_L;
+}
+
+int16_t Motors_GetRpmR()
+{
+    return RPM_R;
 }

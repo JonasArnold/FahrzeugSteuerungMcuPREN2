@@ -9,11 +9,11 @@ void StartButton_Init()
     pinMode(start_Pin, INPUT);
 }
 
-int StartButton_Handle()
+bool StartButton_GetState()
 {
     if (digitalRead(start_Pin)==LOW)
     {
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }

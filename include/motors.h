@@ -20,4 +20,9 @@ void Motors_Forward(int);
 */
 void Motors_ForwardAndSteering(uint8_t speed, int8_t steeringVal);
 
+/* get left motors current rpm */
+int16_t Motors_GetRpmL();
+/* get right motors current rpm */
+int16_t Motors_GetRpmR();
+
 #endif

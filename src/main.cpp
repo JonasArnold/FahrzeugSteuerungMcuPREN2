@@ -6,12 +6,14 @@
 #include "i2c.h"
 #include "remote-control.h"
 #include "start-button.h"
+#include "battery-monitoring.h"
 
-uint16_t sensorValue = 0;
-uint8_t speedVal;
+int16_t sensorValue, rpmL, rpmR;
+uint8_t speedVal, batPct;
 int8_t steeringVal;
 uint8_t driveCommand;
 bool startButtonPressed = false;
+bool connected;
 
 void setup() {
   // put your setup code here, to run once:
@@ -20,23 +22,28 @@ void setup() {
   CoilSensor_Init();
 
 #ifdef COMMUNICATION_ENABLED
-  Display_ShowText(15, 15, String("Initializing I2C..."));
+  Display_ShowInitText(String("Init i2c communication..."));
   I2C_Init();
 #endif
 
+  Display_ShowInitText(String("Init battery monitoring..."));
+  BatteryMonitoring_Init();
+  delay(100);
+
+  Display_ShowInitText(String("Init start button..."));
   StartButton_Init();
+  delay(100);
 
+  Display_ShowInitText(String("Init remote control..."));
   RemoteControl_Init();
+  delay(100);
 
-  Display_Clear();
-  Display_ShowText(15, 15, String("Initializing motors..."));
+  Display_ShowInitText(String("Init motors..."));
   Motors_Init();
 
-  Display_Clear();
-  Display_ShowText(15, 15, String("Init done"));
+  Display_ShowInitText(String("Init done"));
   delay(2000);
   Display_Clear();
-  Display_SetupBase();
 
   // TEST_I2C VAR
   set_state(Ready); set_batteryLevel(0); set_speed(1000);
@@ -46,15 +53,15 @@ void loop() {
 
   // ausgehende Daten aktualisieren (state/batterylevel/speed)
 
-  while(!startButtonPressed) {
-    // ausgehende Daten aktualisieren (state/batterylevel/speed)
-    if(StartButton_Handle()==1) {
-      startButtonPressed = true;
-      Display_ShowText(15, 15, String("Start-Button pressed"));
-      delay(5000);
-      Display_Clear();
-    }
-  }
+  // while(!startButtonPressed) {
+  //   // ausgehende Daten aktualisieren (state/batterylevel/speed)
+  //   if(StartButton_GetState() == true) {
+  //     startButtonPressed = true;
+  //     Display_ShowText(15, 15, String("Start-Button pressed"));
+  //     delay(5000);
+  //     Display_Clear();
+  //   }
+  // }
   
 
 #ifdef COMMUNICATION_ENABLED
@@ -76,6 +83,11 @@ void loop() {
 #endif
   
   Motors_Handle();
+  rpmL = Motors_GetRpmL();
+  rpmR = Motors_GetRpmR();
+
+  batPct = BatteryMonitoring_GetPercent();
+  Helpers_SerialPrintLnAndVal("Battery: ", batPct);
 
   // read coil sensor
   sensorValue = CoilSensor_Read();
@@ -84,18 +96,15 @@ void loop() {
   // get remote control data (motor test)
   speedVal = RemoteControl_GetThrottle();
   steeringVal = RemoteControl_GetSteering();
+  connected = RemoteControl_GetConnectedState();
 
   // set motor speed
   Motors_ForwardAndSteering(speedVal, steeringVal);  
 
   // update display
   Display_Clear();
-  Display_ShowText(15, 11, String("Coil L val:"));
-  Display_ShowText(80, 11, String(sensorValue));
-  Display_ShowText(15, 25, String("Motors speed:"));
-  Display_ShowText(80, 25, String(speedVal));
-  Display_ShowText(15, 39, String("Steering:"));
-  Display_ShowText(80, 39, String(steeringVal));
-  
+  Display_SetupBase();
+  Display_UpdateNewValues(String(DeviceState::Ready), batPct, connected, sensorValue, speedVal, steeringVal, rpmL, rpmR);
+
   delay(50);
 }
