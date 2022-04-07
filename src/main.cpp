@@ -5,11 +5,13 @@
 #include "motors.h"
 #include "i2c.h"
 #include "remote-control.h"
+#include "start-button.h"
 
 uint16_t sensorValue = 0;
 uint8_t speedVal;
 int8_t steeringVal;
 uint8_t driveCommand;
+bool startButtonPressed = false;
 
 void setup() {
   // put your setup code here, to run once:
@@ -21,6 +23,8 @@ void setup() {
   Display_ShowText(15, 15, String("Initializing I2C..."));
   I2C_Init();
 #endif
+
+  StartButton_Init();
 
   RemoteControl_Init();
 
@@ -39,6 +43,19 @@ void setup() {
 }
 
 void loop() {
+
+  // ausgehende Daten aktualisieren (state/batterylevel/speed)
+
+  while(!startButtonPressed) {
+    // ausgehende Daten aktualisieren (state/batterylevel/speed)
+    if(StartButton_Handle()==1) {
+      startButtonPressed = true;
+      Display_ShowText(15, 15, String("Start-Button pressed"));
+      delay(5000);
+      Display_Clear();
+    }
+  }
+  
 
 #ifdef COMMUNICATION_ENABLED
   // handle all periodic stuff

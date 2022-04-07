@@ -94,8 +94,8 @@ void Motors_ForwardAndSteering(uint8_t speed, int8_t steeringVal)
     leftAmount += 2*steeringVal;
     rightAmount -= 2*steeringVal;
 
-    motorL.write(map(leftAmount, 0, 255, 98, 110));
-    motorR.write(map(rightAmount, 0, 255, 98, 110));
+    motorL.write(map(leftAmount, 0, 255, 98, 180));
+    motorR.write(map(rightAmount, 0, 255, 98, 180));
 }
 
 
