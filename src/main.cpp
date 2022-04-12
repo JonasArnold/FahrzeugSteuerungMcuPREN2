@@ -17,7 +17,9 @@ bool connected;
 
 void setup() {
   // put your setup code here, to run once:
+#ifdef DEBUGGING_ENABLED
   Serial.begin(115200);
+#endif
   Display_Init();
   CoilSensor_Init();
 

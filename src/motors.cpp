@@ -89,10 +89,17 @@ void Motors_Forward(int percent)
 
 void Motors_ForwardAndSteering(uint8_t speed, int8_t steeringVal)
 {
-    uint8_t leftAmount = speed, rightAmount = speed;
+    int16_t leftAmount = speed, rightAmount = speed;
 
     leftAmount += steeringVal;
     rightAmount -= steeringVal;
+
+    // limit values
+    if(leftAmount < 0) {leftAmount = 0;}
+    if(leftAmount > 255) {leftAmount = 255;}
+
+    if(rightAmount < 0) {rightAmount = 0;}
+    if(rightAmount > 255) {rightAmount = 255;}
 
     motorL.write(map(leftAmount, 0, 255, 98, 170));
     motorR.write(map(rightAmount, 0, 255, 98, 170));

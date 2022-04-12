@@ -2,5 +2,6 @@
 #define CONFIGURATION_H_
 
 //#define COMMUNICATION_ENABLED
+//#define DEBUGGING_ENABLED
 
 #endif
