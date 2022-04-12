@@ -1,4 +1,5 @@
 #include "display.h"
+#include "configuration.h"
 #include <SPI.h>
 #include <Wire.h>               // Only needed for Arduino 1.6.5 and earlier
 #include "SSD1306Wire.h"        // legacy: #include "SSD1306.h"
@@ -7,6 +8,7 @@
 SSD1306Wire display(0x3c, 5, 4);
 
 // 'logo_small', 90x39px
+#ifdef USING_DISPLAY
 static const uint8_t logo_small[512] = {
 	0xff, 0xff, 0xff, 0xff, 0xff, 0xf9, 0xff, 0xff, 0xff, 0xff, 0xff, 0xc0, 0xff, 0xff, 0xff, 0xff, 
 	0xff, 0xf0, 0xff, 0xff, 0xff, 0xff, 0xff, 0xc0, 0xff, 0xff, 0xff, 0xff, 0xff, 0xf0, 0xe1, 0xff, 
@@ -39,10 +41,12 @@ static const uint8_t logo_small[512] = {
 	0x03, 0xc7, 0x00, 0xe4, 0x00, 0x20, 0xf0, 0x00, 0x3e, 0x41, 0x22, 0x3e, 0x03, 0xc7, 0x04, 0xe6, 
 	0x18, 0x21, 0xf0, 0x40
 };
+#endif
 
 
 void Display_Init()
 {
+#ifdef USING_DISPLAY
   // Initialising the UI will init the display too.
   display.init();
 
@@ -50,10 +54,12 @@ void Display_Init()
   display.setFont(ArialMT_Plain_10);
 
   Serial.println("Display initialized.");
+#endif
 }
 
 void Display_SetupBase()
 {
+#ifdef USING_DISPLAY
   display.drawHorizontalLine(0, 16, 128);
   display.drawHorizontalLine(0, 32, 128);
   display.drawHorizontalLine(0, 48, 128);
@@ -72,10 +78,12 @@ void Display_SetupBase()
   display.drawString(67, 51, "RPM R");
 
   display.display();
+#endif
 }
 
 void Display_UpdateNewValues(String state, int batPct, bool connected, int coilVal, int speedval, int steerVal, int rpmL, int rpmR)
 {
+#ifdef USING_DISPLAY
   display.drawString(35, 3, state);
   display.drawString(90, 3, String(batPct));  
   if(connected)
@@ -90,10 +98,12 @@ void Display_UpdateNewValues(String state, int batPct, bool connected, int coilV
   display.drawString(105, 51, String(rpmR));
 
   display.display();
+#endif
 }
 
 void Display_ShowInitText(String text)
 {
+#ifdef USING_DISPLAY
   display.clear();
   display.drawFastImage(19, 3, 90, 39, logo_small);
   display.setColor(WHITE);
@@ -102,20 +112,25 @@ void Display_ShowInitText(String text)
   display.drawString(5, 45, text);
 
   display.display();
+#endif
 }
 
 
 void Display_ShowText(int16_t posX, int16_t posY, String text)
 {
+#ifdef USING_DISPLAY
   display.setColor(WHITE);
   display.setTextAlignment(TEXT_ALIGN_LEFT);
   display.drawString(posX, posY, text);
   display.setFont(ArialMT_Plain_10);
 
   display.display();
+#endif
 }
 
 void Display_Clear()
 {
+#ifdef USING_DISPLAY
   display.clear();
+#endif
 }

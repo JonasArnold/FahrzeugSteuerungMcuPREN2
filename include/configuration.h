@@ -3,5 +3,6 @@
 
 //#define COMMUNICATION_ENABLED
 //#define DEBUGGING_ENABLED
+//#define USING_DISPLAY
 
 #endif
