@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include "configuration.h"
 #include "helpers.h"
 #include "display.h"
 #include "coil-sensor.h"
@@ -85,8 +86,8 @@ void loop() {
 #endif
   
   Motors_Handle();
-  rpmL = Motors_GetRpmL();
-  rpmR = Motors_GetRpmR();
+  rpmL = int16_t(Motors_GetMpsL() * 100);
+  rpmR = int16_t(Motors_GetMpsR() * 100);
 
   batPct = BatteryMonitoring_GetPercent();
   Helpers_SerialPrintLnAndVal("Battery: ", batPct);

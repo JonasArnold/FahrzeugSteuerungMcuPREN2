@@ -25,4 +25,9 @@ int16_t Motors_GetRpmL();
 /* get right motors current rpm */
 int16_t Motors_GetRpmR();
 
+/* get left motors current meters per second */
+float Motors_GetMpsL();
+/* get right motors current meters per second */
+float Motors_GetMpsR();
+
 #endif

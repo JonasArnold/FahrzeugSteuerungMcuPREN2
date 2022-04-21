@@ -21,6 +21,9 @@ unsigned int flank_count_l, flank_count_r;
 const int factor = 60/25;                   // (60 secs / min) *  [Amount of flanks per full revolution]
 const int millisBetweenRpmCount = 1000;     // calculate rpm every x [ms]
 unsigned long lastRpmCalculation = 0;       // stores last rpm calculation millis
+const int wheelPerimeter = 408;             // [mm] perimeter of the wheel
+const int wheelRadius = 65;                 // [mm] radius of wheel
+const float transmissionRatio = 1.8f;        // factor of transmission between motor and wheel
 
 int RPM_L, RPM_R;
 
@@ -126,3 +129,19 @@ int16_t Motors_GetRpmR()
 {
     return RPM_R;
 }
+
+float ConvertRpmToMps(int16_t rpm)
+{
+    return (float)(rpm / transmissionRatio) * ((float)wheelRadius / (60.0f * 1000.0f));
+}
+
+float Motors_GetMpsL()
+{
+    return ConvertRpmToMps(RPM_L);
+}
+
+float Motors_GetMpsR()
+{
+    return ConvertRpmToMps(RPM_R);
+}
+
