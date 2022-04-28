@@ -98,14 +98,15 @@ void Motors_ForwardAndSteering(uint8_t speed, int8_t steeringVal)
     rightAmount -= steeringVal;
 
     // limit values
-    if(leftAmount < 0) {leftAmount = 0;}
-    if(leftAmount > 255) {leftAmount = 255;}
+    if(leftAmount < -255) { leftAmount = -255; }
+    if(leftAmount > 255)  { leftAmount = 255;  }
+    if(leftAmount < 0)  { motorL.write(map(leftAmount, 0, -255, 1450, 1050)); }
+    if(leftAmount >= 0) { motorL.write(map(leftAmount, 0, 255, 1550, 1950)); }
 
-    if(rightAmount < 0) {rightAmount = 0;}
-    if(rightAmount > 255) {rightAmount = 255;}
-
-    motorL.write(map(leftAmount, 0, 255, 98, 170));
-    motorR.write(map(rightAmount, 0, 255, 98, 170));
+    if(rightAmount < -255) { rightAmount = -255; }
+    if(rightAmount > 255)  { rightAmount = 255;  }
+    if(rightAmount < 0)  { motorR.write(map(rightAmount, 0, -255, 1450, 1050)); }
+    if(rightAmount >= 0) { motorR.write(map(rightAmount, 0, 255, 1550, 1950)); }
 }
 
 
@@ -130,18 +131,18 @@ int16_t Motors_GetRpmR()
     return RPM_R;
 }
 
-float ConvertRpmToMps(int16_t rpm)
+int16_t ConvertRpmToMMpS(int16_t rpm)
 {
-    return (float)(rpm / transmissionRatio) * ((float)wheelRadius / (60.0f * 1000.0f));
+    return (int16_t)(rpm / transmissionRatio) * ((float)wheelRadius / (60.0f));
 }
 
-float Motors_GetMpsL()
+int16_t Motors_GetMMpSL()
 {
-    return ConvertRpmToMps(RPM_L);
+    return ConvertRpmToMMpS(RPM_L);
 }
 
-float Motors_GetMpsR()
+int16_t Motors_GetMMpSR()
 {
-    return ConvertRpmToMps(RPM_R);
+    return ConvertRpmToMMpS(RPM_R);
 }
 
