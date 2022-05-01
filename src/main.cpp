@@ -8,6 +8,7 @@
 #include "remote-control.h"
 #include "start-button.h"
 #include "battery-monitoring.h"
+#include "deviation-controller.h"
 
 int16_t sensorValue, rpmL, rpmR;
 uint8_t speedVal, batPct;
@@ -102,7 +103,7 @@ void loop() {
   connected = RemoteControl_GetConnectedState();
 
   // set motor speed
-  Motors_ForwardAndSteering(speedVal, steeringVal);  
+  Motors_ForwardAndSteering(speedVal, DeviationController_CalcSteering(sensorValue));  
 
   // update display
   Display_Clear();

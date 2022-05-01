@@ -3,6 +3,15 @@
 
 #include <Arduino.h>
 
+enum MotorState
+{
+    UnknownMotorState = 0, 
+    Forward = 1, 
+    SwitchingBackward = 2, 
+    Backward = 3,
+    SwitchingForward = 4
+};
+
 /* initialization */
 void Motors_Init(void);
 /* de-initialization */

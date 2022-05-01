@@ -21,5 +21,7 @@ void DeviationController_Deinit(void)
 int16_t DeviationController_CalcSteering(int16_t deviation)
 {
     int16_t steering = -(Kp * (float)deviation);
+    if (steering > 127)  { steering = 127;  }
+    if (steering < -127) { steering = -127; }
     return steering;
 }

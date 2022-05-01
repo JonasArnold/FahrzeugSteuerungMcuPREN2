@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-enum DeviceState{Unknown, Ready, NormSpeed, RedSpeed, Stopped};
+enum DeviceState{UnknownDeviceState, Ready, NormSpeed, RedSpeed, Stopped};
 
 enum Command
 {
