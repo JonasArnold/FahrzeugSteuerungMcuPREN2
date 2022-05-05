@@ -1,21 +1,23 @@
 #include <Arduino.h>
 #include "state-machine.h"
 #include "configuration.h"
+#include "helpers.h"
 
 static DeviceState currentState;
 
 void StateMachine_Init(void){
-    currentState = UnknownDeviceState;
+    StateMachine_SetCurrentState(UnknownDeviceState);
 }
 
 /* module de-initialization */
 void StateMachine_Deinit(void){
-    currentState = UnknownDeviceState;
+    StateMachine_SetCurrentState(UnknownDeviceState);
 }
 
 /* set current state */
 void StateMachine_SetCurrentState(DeviceState newState){
-    currentState == newState;
+    currentState = newState;
+    Helpers_SerialPrintLnAndVal("State changed to:", currentState);
 }
 
 /* get current state */

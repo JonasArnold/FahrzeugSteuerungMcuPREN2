@@ -15,7 +15,6 @@ int16_t rpmL, rpmR;
 uint8_t speedVal, batPct;
 int16_t steeringVal;
 uint8_t speedLevel = SPEED_HALT;
-bool startButtonPressed = false;
 bool connected;
 
 void setup() {
@@ -62,19 +61,20 @@ void setup() {
 void loop() {
 
   // if there is a button event
-  if(StartButton_GetState())
+  if(StartButton_GetEventHappened())
   {
     DeviceState currentState = StateMachine_GetCurrentState();
     // set to normal speed if device is ready or stopped
-    if(currentState == Ready || currentState == Stopped)
+    if(currentState == DeviceState::Ready || currentState == DeviceState::Stopped)
     {
-      StateMachine_SetCurrentState(RedSpeed);
+      StateMachine_SetCurrentState(DeviceState::RedSpeed);
     }
     // stop device if the button is pressed during drive
     if(currentState == DeviceState::NormSpeed || currentState ==  DeviceState::RedSpeed)
     {
-      StateMachine_SetCurrentState(Stopped);
+      StateMachine_SetCurrentState(DeviceState::Stopped);
     }
+    delay(100); // debounce
   }
 
   /* HANDLE INPUTS */
@@ -118,17 +118,16 @@ void loop() {
 #endif
 
   // read sensor values and set motor speed 
-#ifdef REMOTE_CONTROL_ENABLED
   int16_t deviationValue = CoilSensor_ReadDeviation();
   Helpers_SerialPrintLnAndVal("Read sensor deviation value: ", deviationValue);
-
+#ifdef REMOTE_CONTROL_ENABLED
   Motors_ForwardAndSteering(speedVal, steeringVal); 
 #endif
 
-#ifdef AUTOMATED_DRIVING_ENABLED
   uint16_t sensorValues[2];
   int16_t motorValues[1];
   CoilSensor_ReadIndividualValues(sensorValues);
+#ifdef AUTOMATED_DRIVING_ENABLED
   DeviationController_CalcIndividualMotorPower(StateMachine_GetSpeedApropriateToState(), sensorValues, motorValues);
   Motors_LeftRightIndividual(motorValues[0], motorValues[1]);
 #endif
@@ -136,7 +135,7 @@ void loop() {
   // update display
   Display_Clear();
   Display_SetupBase();
-  Display_UpdateNewValues(String(DeviceState::Ready), batPct, connected, deviationValue, speedVal, steeringVal, rpmL, rpmR);
+  Display_UpdateNewValues(StateMachine_GetCurrentState(), batPct, connected, deviationValue, 0, sensorValues[0], sensorValues[1], rpmL, rpmR);
 
   delay(50);
 }

@@ -71,9 +71,9 @@ void Display_SetupBase()
   display.drawString(3, 3, "State");
   display.drawString(80, 3, "B");  
   display.drawString(3, 19, "Coil");
-  //display.drawString(67, 19, "");
-  display.drawString(3, 35, "Speed");
-  display.drawString(67, 35, "Steer");
+  display.drawString(67, 19, "");
+  display.drawString(3, 35, "C L");
+  display.drawString(67, 35, "C R");
   display.drawString(3, 51, "RPM L");
   display.drawString(67, 51, "RPM R");
 
@@ -81,21 +81,21 @@ void Display_SetupBase()
 #endif
 }
 
-void Display_UpdateNewValues(String state, int batPct, bool connected, int coilVal, int speedval, int steerVal, int rpmL, int rpmR)
+void Display_UpdateNewValues(int state, int batPct, bool connected, int valTL, int valTR, int valML, int valMR, int valBL, int valBR)
 {
 #ifdef USING_DISPLAY
-  display.drawString(35, 3, state);
+  display.drawString(35, 3, String(state));
   display.drawString(90, 3, String(batPct));  
   if(connected)
   {
     display.drawString(120, 3, "C");  
   }
-  display.drawString(40, 19, String(coilVal));
-  //display.drawString(105, 19, "");
-  display.drawString(40, 35, String(speedval));
-  display.drawString(105, 35, String(steerVal));
-  display.drawString(40, 51, String(rpmL));
-  display.drawString(105, 51, String(rpmR));
+  display.drawString(40, 19, String(valTL));
+  display.drawString(105, 19, String(valTR));
+  display.drawString(40, 35, String(valML));
+  display.drawString(105, 35, String(valMR));
+  display.drawString(40, 51, String(valBL));
+  display.drawString(105, 51, String(valBR));
 
   display.display();
 #endif

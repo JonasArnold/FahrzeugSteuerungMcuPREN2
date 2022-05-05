@@ -9,10 +9,14 @@ void StartButton_Init(void);
 void StartButton_Deinit(void);
 
 
-/* gets the state of the button. 
-   returns: pressed = true, not pressed = false 
+/* returns if a button event happened
    after calling this method, a potential button event is reset
    example: Function returns true because button was pressed, next time the function is called it returns false again*/
+bool StartButton_GetEventHappened(void);
+
+/* gets the state of the button. 
+   returns: pressed = true, not pressed = false 
+*/
 bool StartButton_GetState(void);
 
 #endif

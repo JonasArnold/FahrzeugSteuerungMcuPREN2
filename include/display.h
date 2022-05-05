@@ -14,7 +14,7 @@ void Display_ShowInitText(String text);
 void Display_SetupBase();
 
 /* Update the values displayed on the base structure of the display. */
-void Display_UpdateNewValues(String state, int batPct, bool connected, int coilVal, int speedval, int steerVal, int rpmL, int rpmR);
+void Display_UpdateNewValues(int state, int batPct, bool connected, int valTL, int valTR, int valML, int valMR, int valBL, int valBR);
 
 /* Show a text on the display, x, y, text */
 void Display_ShowText(int16_t, int16_t, String);

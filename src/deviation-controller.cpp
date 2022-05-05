@@ -33,18 +33,27 @@ void DeviationController_CalcIndividualMotorPower(uint8_t requestedSpeed, uint16
     uint16_t sum = sensorValuesArray[0] + sensorValuesArray[1];
     uint8_t speed = requestedSpeed;
 
-    // cable lost
-    if(sum < 500)
+    // requested speed = 0
+    if(requestedSpeed == 0)
     {
-        // TODO find back to path
         motorControlArray[0] = 0;
         motorControlArray[1] = 0;
         return;
     }
-    // big deviation => slower the bigger the deviation
-    else if(absDifference > 1000)
+
+    // cable lost
+    if(sum < 500)
     {
-        speed -= (absDifference-1000) / 100; // e.g. at difference of 2000 => -200 speed
+        // TODO improve find back to path
+        motorControlArray[0] = -80;
+        motorControlArray[1] = -80;
+        return;
+    }
+
+    // big deviation => reduce speed, the bigger the deviation
+    if(absDifference > 600)
+    {
+        speed -= ((absDifference-600) / 2); // e.g. at difference of 1000 => -200 speed
     }
 
 
