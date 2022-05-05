@@ -6,7 +6,7 @@
 void RemoteControl_Init();
 
 uint8_t RemoteControl_GetThrottle();
-int8_t RemoteControl_GetSteering();
+int16_t RemoteControl_GetSteering();
 bool RemoteControl_GetConnectedState();
 
 #endif

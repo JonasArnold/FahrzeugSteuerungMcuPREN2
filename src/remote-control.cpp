@@ -42,12 +42,12 @@ uint8_t RemoteControl_GetThrottle()
 }
 
 
-int8_t RemoteControl_GetSteering()
+int16_t RemoteControl_GetSteering()
 {
 #ifdef REMOTE_CONTROL_ENABLED
     unsigned long steering = pulseIn(steeringPin, HIGH);
     Helpers_SerialPrintLnAndVal("Steering: ", steering);
-    int8_t mappedSteering = map( steering, 1080, 1930, -127, 127 );
+    int16_t mappedSteering = map( steering, 1080, 1930, -255, 255 );
 
     // only return if remote is initialized
     if(REMOTE_CONTROL_CONNECTED)

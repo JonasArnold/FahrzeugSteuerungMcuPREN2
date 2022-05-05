@@ -123,6 +123,11 @@ static int CalculateMotorSpeed(int16_t requestedAmount, unsigned long *lastDirec
                 break; // return default us
             }
 
+            // double amount since only half the power is provided by the ESC in Backward mode
+            amount = amount * 2;  
+            // limit value again
+            if(amount < -255) { amount = -255; }
+
             microseconds = map(amount, -255, 0, 1050, 1470);
             break;
 
@@ -139,14 +144,13 @@ static int CalculateMotorSpeed(int16_t requestedAmount, unsigned long *lastDirec
                 }
             }
 
-            microseconds = 1500;
-            break;
+            break; // return default us
 
         case MotorState::UnknownMotorState:
         default:
             /* code */
             *currentState = MotorState::Forward;
-            break;
+            break; // return default us
     }
 
     return microseconds;
@@ -159,7 +163,7 @@ void Motors_Forward(int percent)
 }
 
 
-void Motors_ForwardAndSteering(uint8_t speed, int8_t steeringVal)
+void Motors_ForwardAndSteering(uint8_t speed, int16_t steeringVal)
 {
     int16_t leftAmount = speed, rightAmount = speed;
 
@@ -198,11 +202,21 @@ int16_t ConvertRpmToMMpS(int16_t rpm)
 
 int16_t Motors_GetMMpSL()
 {
-    return ConvertRpmToMMpS(RPM_L);
+    int16_t mps = ConvertRpmToMMpS(RPM_L);
+    if(stateMotorL == MotorState::Backward)
+    {
+        mps = -1 * mps;
+    }
+    return mps;
 }
 
 int16_t Motors_GetMMpSR()
 {
-    return ConvertRpmToMMpS(RPM_R);
+    int16_t mps = ConvertRpmToMMpS(RPM_R);
+    if(stateMotorR == MotorState::Backward)
+    {
+        mps = -1 * mps;
+    }
+    return mps;
 }
 

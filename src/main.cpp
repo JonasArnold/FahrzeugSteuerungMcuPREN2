@@ -12,7 +12,7 @@
 
 int16_t sensorValue, rpmL, rpmR;
 uint8_t speedVal, batPct;
-int8_t steeringVal;
+int16_t steeringVal;
 uint8_t driveCommand;
 bool startButtonPressed = false;
 bool connected;
@@ -103,7 +103,7 @@ void loop() {
   connected = RemoteControl_GetConnectedState();
 
   // set motor speed
-  Motors_ForwardAndSteering(speedVal, DeviationController_CalcSteering(sensorValue));  
+  Motors_ForwardAndSteering(speedVal, steeringVal);//DeviationController_CalcSteering(sensorValue));  
 
   // update display
   Display_Clear();
