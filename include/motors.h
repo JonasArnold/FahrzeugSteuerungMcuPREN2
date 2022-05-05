@@ -29,6 +29,12 @@ void Motors_Forward(int);
 */
 void Motors_ForwardAndSteering(uint8_t speed, int16_t steeringVal);
 
+/* individually control device motors
+   left: -255...255 power for left motor
+   right: -255...255 power for right motor
+*/
+void Motors_LeftRightIndividual(int16_t left, int16_t right);
+
 /* get left motors current rpm */
 int16_t Motors_GetRpmL();
 /* get right motors current rpm */

@@ -2,25 +2,27 @@
 #include <Wire.h>
 #include "i2c.h"
 #include "display.h"
+#include "configuration.h"
 
 #define SDA_PIN 25
 #define SCL_PIN 26
 #define I2C_SLAVE_ADDR 0x40           // I2C Adresse vom Slave (ESP32)
 
 // vars
-enum Command command = Command::None;
-DeviceState state;
-byte batteryLevel;
-byte speed;
+static Command command = Command::None;
+byte state = 0, batteryLevel = 0, speed = 0;  // variables that will be send to master
 
 // function declaration
 static void receiveData(int byteCount);
 static void sendData(void);
 
 void I2C_Init() {
+#ifdef COMMUNICATION_ENABLED
     bool res = Wire1.begin((uint8_t)I2C_SLAVE_ADDR, SDA_PIN, SCL_PIN, 400000);
     if (!res) {
+#ifdef DEBUGGING_ENABLED
         Serial.println("I2C slave init failed");
+#endif
         Display_Clear();
         Display_ShowText(15, 15, String("I2C slave init failed"));
         while(1) delay(100);
@@ -29,16 +31,16 @@ void I2C_Init() {
     Wire1.onReceive(receiveData);
     Wire1.onRequest(sendData);
 
+#ifdef DEBUGGING_ENABLED
     Serial.println("I2C slave init done");
-    Display_Clear();
-    Display_ShowText(15, 15, String("I2C slave init done"));
-    delay(2000);
+#endif
+#endif
 }
 
-int I2C_Handle()
+Command I2C_Handle()
 {                    
     if(command != Command::None) {
-        int command_out = command;
+        Command command_out = command;
         command = Command::None;
         return command_out;
     }
@@ -50,9 +52,9 @@ int I2C_Handle()
 // do not perform time-consuming tasks inside this function,
 // do them elsewhere and simply read the data you wish to
 // send inside here.
-static void sendData() {
+static void sendData(byte state, byte batteryLevel, byte speed) {
 
-    byte data [] = {(byte)state, batteryLevel, speed};
+    byte data [] = {state, batteryLevel, speed};
     Wire1.write(data, 3);
 }
 
@@ -69,29 +71,14 @@ static void receiveData(int howMany) {
 }
 
 // getters & setters
-DeviceState get_state() {
+void I2C_SetDeviceState(byte pState) {
 
-    return state;
+    state = pState;
 }
-void set_state(DeviceState x) {
+void I2C_SetBatteryLevel(byte pBatteryLevel) {
 
-    state = x;
+    batteryLevel = pBatteryLevel;
 }
-
-int get_batteryLevel() {
-
-    return batteryLevel;
-}
-void set_batteryLevel(int x) {
-
-    batteryLevel = x;
-}
-
-int get_speed() {
-
-    return speed;
-}
-void set_speed(int x) {
-
-    speed = x;
+void I2C_SetSetSpeed(byte pSetSpeed) {
+    speed = pSetSpeed;
 }

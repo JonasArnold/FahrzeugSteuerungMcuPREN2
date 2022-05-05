@@ -9,3 +9,11 @@
 #define AUTOMATED_DRIVING_ENABLED
 
 #endif
+
+
+
+
+/* SPEED LEVELS 0...255 */
+#define SPEED_HALT 0
+#define SPEED_SLOW 100
+#define SPEED_FAST 250

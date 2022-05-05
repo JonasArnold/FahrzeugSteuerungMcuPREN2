@@ -3,27 +3,20 @@
 
 #include <Arduino.h>
 
-enum DeviceState{UnknownDeviceState, Ready, NormSpeed, RedSpeed, Stopped};
-
-enum Command
+typedef enum
 {
     None = 0, 
     SpeedDown = 1, 
     SpeedUp = 2, 
     Stop = 3
-};
+} Command;
 
 void I2C_Init(void);
 
-int I2C_Handle(void);
+Command I2C_Handle(void);
 
-DeviceState get_state(void);
-void set_state(DeviceState);
-
-int get_batteryLevel(void);
-void set_batteryLevel(int);
-
-int get_speed(void);
-void set_speed(int);
+void I2C_SetDeviceState(byte);
+void I2C_SetBatteryLevel(byte);
+void I2C_SetSetSpeed(byte);
 
 #endif

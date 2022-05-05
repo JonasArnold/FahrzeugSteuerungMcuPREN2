@@ -9,11 +9,12 @@
 #include "start-button.h"
 #include "battery-monitoring.h"
 #include "deviation-controller.h"
+#include "state-machine.h"
 
-int16_t sensorValue, rpmL, rpmR;
+int16_t rpmL, rpmR;
 uint8_t speedVal, batPct;
 int16_t steeringVal;
-uint8_t driveCommand;
+uint8_t speedLevel = SPEED_HALT;
 bool startButtonPressed = false;
 bool connected;
 
@@ -45,47 +46,38 @@ void setup() {
   Display_ShowInitText(String("Init motors..."));
   Motors_Init();
 
+  Display_ShowInitText(String("Init state machine..."));
+  StateMachine_Init();
+  delay(100);
+
+
   Display_ShowInitText(String("Init done"));
   delay(2000);
   Display_Clear();
 
-  // TEST_I2C VAR
-  set_state(Ready); set_batteryLevel(0); set_speed(1000);
+  // device ready
+  StateMachine_SetCurrentState(Ready);
 }
 
 void loop() {
 
-  // ausgehende Daten aktualisieren (state/batterylevel/speed)
-
-  // while(!startButtonPressed) {
-  //   // ausgehende Daten aktualisieren (state/batterylevel/speed)
-  //   if(StartButton_GetState() == true) {
-  //     startButtonPressed = true;
-  //     Display_ShowText(15, 15, String("Start-Button pressed"));
-  //     delay(5000);
-  //     Display_Clear();
-  //   }
-  // }
-  
-
-#ifdef COMMUNICATION_ENABLED
-  // handle all periodic stuff
-  driveCommand = I2C_Handle();
-  if(driveCommand) {
-    /* transfer command immediately to drive controller */
-    Display_ShowText(15, 15, String("Current command: " + driveCommand));
-    delay(5000); // NUR ZUM TESTEN!!!
+  // if there is a button event
+  if(StartButton_GetState())
+  {
+    DeviceState currentState = StateMachine_GetCurrentState();
+    // set to normal speed if device is ready or stopped
+    if(currentState == Ready || currentState == Stopped)
+    {
+      StateMachine_SetCurrentState(RedSpeed);
+    }
+    // stop device if the button is pressed during drive
+    if(currentState == DeviceState::NormSpeed || currentState ==  DeviceState::RedSpeed)
+    {
+      StateMachine_SetCurrentState(Stopped);
+    }
   }
 
-  /* update outgoing data (state / batteryLevel / speed) */
-  // Test_I2C
-  set_state(get_state());
-  set_batteryLevel(get_batteryLevel() + 2);
-  set_speed(get_speed());
-  delay(2000);
-  // TEST_I2C END
-#endif
-  
+  /* HANDLE INPUTS */
   Motors_Handle();
   rpmL = int16_t(Motors_GetMMpSL());
   rpmR = int16_t(Motors_GetMMpSR());
@@ -93,22 +85,58 @@ void loop() {
   batPct = BatteryMonitoring_GetPercent();
   Helpers_SerialPrintLnAndVal("Battery: ", batPct);
 
-  // read coil sensor
-  sensorValue = CoilSensor_Read();
-  Helpers_SerialPrintLnAndVal("Read sensor value: ", sensorValue);
-
   // get remote control data (motor test)
   speedVal = RemoteControl_GetThrottle();
   steeringVal = RemoteControl_GetSteering();
   connected = RemoteControl_GetConnectedState();
 
-  // set motor speed
-  Motors_ForwardAndSteering(speedVal, steeringVal);//DeviationController_CalcSteering(sensorValue));  
+  /* HANDLE Communication */
+  // update outgoing data (state / batteryLevel / speed)
+  I2C_SetBatteryLevel((byte)batPct);
+  I2C_SetDeviceState((byte)StateMachine_GetCurrentState());
+  I2C_SetSetSpeed((byte)speedLevel);  
+#ifdef COMMUNICATION_ENABLED
+  Command driveCommand = I2C_Handle();
+  switch (driveCommand)
+  {
+  case SpeedDown:
+    StateMachine_SetCurrentState(DeviceState::RedSpeed);
+    break;
+
+  case SpeedUp:
+    StateMachine_SetCurrentState(DeviceState::NormSpeed);
+    break;
+
+  case Stop:    
+    StateMachine_SetCurrentState(DeviceState::Stopped);
+    break;
+  case None:
+  default:
+    break;
+  }
+
+#endif
+
+  // read sensor values and set motor speed 
+#ifdef REMOTE_CONTROL_ENABLED
+  int16_t deviationValue = CoilSensor_ReadDeviation();
+  Helpers_SerialPrintLnAndVal("Read sensor deviation value: ", deviationValue);
+
+  Motors_ForwardAndSteering(speedVal, steeringVal); 
+#endif
+
+#ifdef AUTOMATED_DRIVING_ENABLED
+  uint16_t sensorValues[2];
+  int16_t motorValues[1];
+  CoilSensor_ReadIndividualValues(sensorValues);
+  DeviationController_CalcIndividualMotorPower(StateMachine_GetSpeedApropriateToState(), sensorValues, motorValues);
+  Motors_LeftRightIndividual(motorValues[0], motorValues[1]);
+#endif
 
   // update display
   Display_Clear();
   Display_SetupBase();
-  Display_UpdateNewValues(String(DeviceState::Ready), batPct, connected, sensorValue, speedVal, steeringVal, rpmL, rpmR);
+  Display_UpdateNewValues(String(DeviceState::Ready), batPct, connected, deviationValue, speedVal, steeringVal, rpmL, rpmR);
 
   delay(50);
 }

@@ -13,4 +13,12 @@ void DeviationController_Deinit(void);
  */
 int16_t DeviationController_CalcSteering(int16_t deviation);
 
+/* Calculate motor power of left and right motor
+   according to left and right sensor value
+   requested speed 0 ... 255
+   sensor left and right values reach from 0 ... 4096
+   motor left and right values shall reach from -255 ... 255
+ */
+void DeviationController_CalcIndividualMotorPower(uint8_t requestedSpeed, uint16_t *sensorValuesArray, int16_t *motorControlArray);
+
 #endif

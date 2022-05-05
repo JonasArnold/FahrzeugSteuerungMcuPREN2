@@ -174,6 +174,12 @@ void Motors_ForwardAndSteering(uint8_t speed, int16_t steeringVal)
     motorR.writeMicroseconds(CalculateMotorSpeed(rightAmount, &directionChangeMotorR, &stateMotorR));
 }
 
+void Motors_LeftRightIndividual(int16_t left, int16_t right)
+{
+    motorL.writeMicroseconds(CalculateMotorSpeed(left, &directionChangeMotorL, &stateMotorL));
+    motorR.writeMicroseconds(CalculateMotorSpeed(right, &directionChangeMotorR, &stateMotorR));
+}
+
 /* ISR */
 void ISR_RPM_L(void)
 {
