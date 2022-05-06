@@ -18,7 +18,7 @@ uint8_t speedLevel = SPEED_HALT;
 bool connected;
 int16_t deviationValue;
 uint16_t sensorValues[2];
-int16_t motorValues[1];
+int16_t motorValues[2];
 
 void setup() {
   // put your setup code here, to run once:
