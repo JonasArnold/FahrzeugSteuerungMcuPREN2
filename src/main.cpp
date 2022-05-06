@@ -16,6 +16,9 @@ uint8_t speedVal, batPct;
 int16_t steeringVal;
 uint8_t speedLevel = SPEED_HALT;
 bool connected;
+int16_t deviationValue;
+uint16_t sensorValues[2];
+int16_t motorValues[1];
 
 void setup() {
   // put your setup code here, to run once:
@@ -55,7 +58,7 @@ void setup() {
   Display_Clear();
 
   // device ready
-  StateMachine_SetCurrentState(Ready);
+  StateMachine_SetCurrentState(DeviceState::Ready);
 }
 
 void loop() {
@@ -114,18 +117,16 @@ void loop() {
   default:
     break;
   }
-
 #endif
 
   // read sensor values and set motor speed 
-  int16_t deviationValue = CoilSensor_ReadDeviation();
+  deviationValue = CoilSensor_ReadDeviation();
   Helpers_SerialPrintLnAndVal("Read sensor deviation value: ", deviationValue);
 #ifdef REMOTE_CONTROL_ENABLED
   Motors_ForwardAndSteering(speedVal, steeringVal); 
 #endif
 
-  uint16_t sensorValues[2];
-  int16_t motorValues[1];
+
   CoilSensor_ReadIndividualValues(sensorValues);
 #ifdef AUTOMATED_DRIVING_ENABLED
   DeviationController_CalcIndividualMotorPower(StateMachine_GetSpeedApropriateToState(), sensorValues, motorValues);
