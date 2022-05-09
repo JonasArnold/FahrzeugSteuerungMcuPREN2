@@ -1,12 +1,12 @@
 #include "motors.h"
 
 // pins
-const int motorL_forward_Pin = 12;
-const int motorL_backward_Pin = 9;
-const int motorL_enable_Pin = 34;
-const int motorR_forward_Pin = 13;
-const int motorR_backward_Pin = 10;
-const int motorR_enable_Pin = 35;
+const int motorL_forward_Pin = 18;
+const int motorL_backward_Pin = 13;
+const int motorL_enable_Pin = 27;
+const int motorR_forward_Pin = 33;
+const int motorR_backward_Pin = 12;
+const int motorR_enable_Pin = 32;
 const int rpm_meter_L_Pin = 16;
 const int rpm_meter_R_Pin = 2;
 
