@@ -53,7 +53,7 @@ void DeviationController_CalcIndividualMotorPower(uint8_t requestedSpeed, uint16
     // big deviation => reduce speed, the bigger the deviation
     if(absDifference > 600)
     {
-        speed -= ((absDifference-600) / 2); // e.g. at difference of 1000 => -200 speed
+        speed -= ((absDifference-600) / 4); // e.g. at difference of 1000 => -100 speed
     }
 
 
