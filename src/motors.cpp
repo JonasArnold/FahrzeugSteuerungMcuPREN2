@@ -162,7 +162,7 @@ static int16_t CalculateMotorSpeed(int16_t requestedAmount, unsigned long *lastD
                 break; // return default
             }
 
-            dutyCycle = requestedAmount;
+            dutyCycle = map(requestedAmount, 0, 255, 140, 255);
             break;
 
         case MotorState::Backward:
@@ -173,7 +173,7 @@ static int16_t CalculateMotorSpeed(int16_t requestedAmount, unsigned long *lastD
                 break; // return default
             }
 
-            dutyCycle = requestedAmount;
+            dutyCycle = map(requestedAmount, 0, -255, -140, -255);
             break;
 
         case MotorState::SwitchingBackward:

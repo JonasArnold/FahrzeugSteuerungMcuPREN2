@@ -48,6 +48,30 @@ void setup() {
   Display_ShowInitText(String("Init motors..."));
   Motors_Init();
 
+/*
+
+  int dutyCycle = 0;
+  while (dutyCycle < 255){
+    Display_ShowInitText(String(dutyCycle));
+    Motors_LeftRightIndividual(dutyCycle, dutyCycle);
+    dutyCycle = dutyCycle + 5;
+    delay(500);
+  }
+  Display_ShowInitText(String("Testing motors -10%"));
+  Motors_LeftRightIndividual(255, -10);
+  delay(2000);
+
+  dutyCycle = 0;
+  while (dutyCycle > -255){
+    Display_ShowInitText(String(dutyCycle));
+    Motors_LeftRightIndividual(dutyCycle, dutyCycle);
+    dutyCycle = dutyCycle - 5;
+    delay(500);
+  }
+  Display_ShowInitText(String("Testing motors 0%"));
+  Motors_LeftRightIndividual(0, 0);
+  */
+
   Display_ShowInitText(String("Init state machine..."));
   StateMachine_Init();
   delay(100);
