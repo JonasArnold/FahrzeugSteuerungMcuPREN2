@@ -15,5 +15,5 @@
 
 /* SPEED LEVELS 0...255 */
 #define SPEED_HALT 0
-#define SPEED_SLOW 80
+#define SPEED_SLOW 60
 #define SPEED_FAST 250

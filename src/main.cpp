@@ -139,5 +139,5 @@ void loop() {
   Display_SetupBase();
   Display_UpdateNewValues(StateMachine_GetCurrentState(), batPct, connected, deviationValue, 0, sensorValues[0], sensorValues[1], rpmL, rpmR);
 
-  delayMicroseconds(500);
+  delayMicroseconds(400);
 }
