@@ -18,7 +18,7 @@ double BatteryMonitoring_GetBatteryVoltage()
 {
     double voltage = analogRead(measuring_pin) * milliVoltsPerAnalogVal; // get voltage in millivolts
     voltage = voltage * scalingFactor;  // multiply by voltage divider constant
-    Helpers_SerialPrintLnAndVal("Battery voltage:", (uint16_t)voltage);
+    //Helpers_SerialPrintLnAndVal("Battery voltage:", (uint16_t)voltage);
     return voltage; 
 }
 
@@ -45,4 +45,3 @@ bool BatteryMonitoring_CriticalCharge()
     }
     return false;
 }
-

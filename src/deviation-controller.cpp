@@ -1,18 +1,19 @@
 #include "deviation-controller.h"
 #include <Arduino.h>
 #include "configuration.h"
+#include "helpers.h"
 
 const float T_ms = 0.5f;
 
 // values for lowpass filter
 const float KpLF = 1.0f;
-const float TauLF = 1.0f;
+const float TauLF = 0.5f;
 float y_lf_1 = 0;
 float y_lf = 0;
 
 // values for controller
-const float Kp = 1.0f/10.0f;
-const float Td = 2.0f;
+const float Kp = 1.0f/7.0f;
+const float Td = 0.7f;
 const float N = 10.0f;
 float u_k = 0;
 float e_k = 0;
@@ -38,8 +39,8 @@ void DeviationController_Init(void)
     u_d_k_1 = 0;
 
     // calculated constant parameters
-    ad = Td / (Td + N * T_ms);;
-    bd = (Kp * N * Td) / (Td + N * T_ms);
+    ad = Td / (Td + N * T_ms); // 0.1666666666666667 @ Td = 0.5
+    bd = (Kp * N * Td) / (Td + N * T_ms); // 0.1666666666666667 @ Td = 0.5 & Kp = 1/10
 }
 
 
@@ -58,11 +59,24 @@ int16_t DeviationController_CalcSteering(int16_t deviation)
     return steering;
 }
 
+int16_t GetUk()
+{
+    return (int16_t)u_k;
+}
+int16_t GetUp()
+{
+    return (int16_t)u_p;
+}
+int16_t GetUd()
+{
+    return (int16_t)u_d;
+}
+
 void DeviationController_CalcIndividualMotorPower(uint8_t requestedSpeed, uint16_t *sensorValuesArray, int16_t *motorControlArray)
 {
     int16_t difference = (int16_t)sensorValuesArray[0] - (int16_t)sensorValuesArray[1];  // difference > 0 ==> left of cable
     //uint16_t absDifference = abs(difference);
-    //uint16_t sum = sensorValuesArray[0] + sensorValuesArray[1];
+    uint16_t sum = sensorValuesArray[0] + sensorValuesArray[1];
     int16_t speed = (int16_t)requestedSpeed;
 
     // requested speed = 0
@@ -74,13 +88,13 @@ void DeviationController_CalcIndividualMotorPower(uint8_t requestedSpeed, uint16
     }
 
     // lowpass filter
-    y_lf = y_lf_1 + (KpLF * difference - y_lf_1) * (T_ms/TauLF);
+    //y_lf = y_lf_1 + (KpLF * difference - y_lf_1) * (T_ms/TauLF);
 
 
     // PD controller
     // compute the error from the low pass filtered signal
     ref = requestedSpeed;
-	e_k = ref - y_lf;
+	e_k = ref - difference;
 		
 	// proportinal term
 	u_p = Kp * e_k;
@@ -98,20 +112,19 @@ void DeviationController_CalcIndividualMotorPower(uint8_t requestedSpeed, uint16
 
 
     // cable lost
- /*   if(sum < 500)
+    if(sum < 500)
     {
         // TODO improve find back to path
         if(difference > 0){  // on the left side of the cable
-            motorControlArray[0] = 70;
-            motorControlArray[1] = 0;
+            motorControlArray[0] = 15;
+            motorControlArray[1] = 80;
         }
         else{  // on the right side of the cable
-            motorControlArray[0] = 0;
-            motorControlArray[1] = 70;
+            motorControlArray[0] = 80;
+            motorControlArray[1] = 15;
         }
         return;
     }
-*/
 
     // big deviation => reduce speed, the bigger the deviation
 /*
@@ -122,25 +135,26 @@ void DeviationController_CalcIndividualMotorPower(uint8_t requestedSpeed, uint16
 */
 
 
-    int16_t steering = (int16_t)u_k;
-    /*int16_t baseSpeed = speed/5;  // base speed = speed minimum, always drive this speed on both sides
-    int16_t restOfSpeed = speed-baseSpeed;
-    motorControlArray[0] = baseSpeed + (restOfSpeed + steering); 
-    motorControlArray[1] = baseSpeed + (restOfSpeed - steering);
+    int16_t steering = (int16_t)u_k;  // u_k ca. from -300 ... 300
+    /* concept with limited speering */
+    //uint16_t absSteering = abs(steering);
+    //int16_t headroom = (speed * 0.9f);  // headroom = amount that steering shall be able to claim (base speed is always on the wheels)
+    //long limitedSteer = Helpers_LimitedMap(absSteering, 0, 255, 0, headroom);
+
+    // left of cable => drive right
+    /*
+    if(steering > 0){
+        motorControlArray[0] = speed + limitedSteer; 
+        motorControlArray[1] = speed - limitedSteer;
+    }    
+    else {
+        motorControlArray[0] = speed - limitedSteer; 
+        motorControlArray[1] = speed + limitedSteer;
+    }
     */
     
     motorControlArray[0] = speed + steering; 
     motorControlArray[1] = speed - steering;
     
-    /* concept with mutliplication, to become speed independent, does not work since steering can get negative */
-    // catch zero division
-    /*if(steering == 0){
-        motorControlArray[0] = speed;
-        motorControlArray[1] = speed;
-        return;
-    }
-    motorControlArray[0] = speed * (steering/255); 
-    motorControlArray[1] = speed / (steering/255);
-    */
     return;
 }

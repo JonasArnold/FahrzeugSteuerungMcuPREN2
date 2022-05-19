@@ -8,6 +8,11 @@ void DeviationController_Init(void);
 /* de-initialization */
 void DeviationController_Deinit(void);
 
+/* debug getters */
+int16_t GetUk();
+int16_t GetUd();
+int16_t GetUp();
+
 /* Calculate steering value according to deviation 
  * out value: -127 ... 127 
  */

@@ -80,11 +80,11 @@ void Display_SetupBase()
   display.drawString(3, 3, "State");
   display.drawString(80, 3, "B");  
   display.drawString(3, 19, "Coil");
-  display.drawString(67, 19, "");
+  display.drawString(67, 19, "u_k");
   display.drawString(3, 35, "C L");
   display.drawString(67, 35, "C R");
-  display.drawString(3, 51, "RPM L");
-  display.drawString(67, 51, "RPM R");
+  display.drawString(3, 51, "u_p");
+  display.drawString(67, 51, "u_d");
 
   display.display();
 #endif

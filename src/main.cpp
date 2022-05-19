@@ -14,7 +14,6 @@
 int16_t rpmL, rpmR;
 uint8_t speedVal, batPct;
 int16_t steeringVal;
-uint8_t speedLevel = SPEED_HALT;
 bool connected;
 int16_t deviationValue;
 uint16_t sensorValues[2];
@@ -45,6 +44,10 @@ void setup() {
   RemoteControl_Init();
   delay(100);
 
+  Display_ShowInitText(String("Init deviation controller ..."));
+  DeviationController_Init();
+  delay(100);
+
   Display_ShowInitText(String("Init motors..."));
   Motors_Init();
 
@@ -71,7 +74,6 @@ void loop() {
     if(currentState == DeviceState::Ready || currentState == DeviceState::Stopped)
     {
       StateMachine_SetCurrentState(DeviceState::RedSpeed);
-      speedLevel = SPEED_SLOW;
     }
     // stop device if the button is pressed during drive
     if(currentState == DeviceState::NormSpeed || currentState ==  DeviceState::RedSpeed)
@@ -87,7 +89,7 @@ void loop() {
   rpmR = int16_t(Motors_GetMMpSR());
 
   batPct = BatteryMonitoring_GetPercent();
-  Helpers_SerialPrintLnAndVal("Battery: ", batPct);
+  //Helpers_SerialPrintLnAndVal("Battery: ", batPct);
 
   // get remote control data (motor test)
   speedVal = RemoteControl_GetThrottle();
@@ -137,7 +139,7 @@ void loop() {
   // update display
   Display_Clear();
   Display_SetupBase();
-  Display_UpdateNewValues(StateMachine_GetCurrentState(), batPct, connected, deviationValue, 0, sensorValues[0], sensorValues[1], rpmL, rpmR);
+  Display_UpdateNewValues(StateMachine_GetCurrentState(), batPct, connected, deviationValue, GetUk(), sensorValues[0], sensorValues[1], GetUp(), GetUd());
 
   delayMicroseconds(400);
 }
