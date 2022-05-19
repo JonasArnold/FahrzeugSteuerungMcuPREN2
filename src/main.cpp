@@ -71,6 +71,7 @@ void loop() {
     if(currentState == DeviceState::Ready || currentState == DeviceState::Stopped)
     {
       StateMachine_SetCurrentState(DeviceState::RedSpeed);
+      speedLevel = SPEED_SLOW;
     }
     // stop device if the button is pressed during drive
     if(currentState == DeviceState::NormSpeed || currentState ==  DeviceState::RedSpeed)
@@ -97,7 +98,7 @@ void loop() {
   // update outgoing data (state / batteryLevel / speed)
   I2C_SetBatteryLevel((byte)batPct);
   I2C_SetDeviceState((byte)StateMachine_GetCurrentState());
-  I2C_SetSetSpeed((byte)speedLevel);  
+  I2C_SetSetSpeed((byte)StateMachine_GetSpeedApropriateToState());  
 #ifdef COMMUNICATION_ENABLED
   Command driveCommand = I2C_Handle();
   switch (driveCommand)
@@ -121,7 +122,7 @@ void loop() {
 
   // read sensor values and set motor speed 
   deviationValue = CoilSensor_ReadDeviation();
-  Helpers_SerialPrintLnAndVal("Read sensor deviation value: ", deviationValue);
+  //Helpers_SerialPrintLnAndVal("Read sensor deviation value: ", deviationValue);
 #ifdef REMOTE_CONTROL_ENABLED
   Motors_ForwardAndSteering(speedVal, steeringVal); 
 #endif

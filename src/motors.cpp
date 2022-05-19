@@ -106,15 +106,18 @@ static int CalculateMotorSpeed(int16_t requestedAmount, unsigned long *lastDirec
     {
         case MotorState::Forward:
             
-            if(amount < 0){
+/*            if(amount < 0){
                 *currentState = MotorState::SwitchingBackward;
                 *lastDirectionChange = now;
                 break; // return default us
+            }*/
+            if(amount < 0){
+                amount = 0;
             }
 
             microseconds = map(amount, 0, 255, 1530, 1950);
             break;
-
+/*
         case MotorState::Backward:
 
             if(amount >= 0){
@@ -130,8 +133,8 @@ static int CalculateMotorSpeed(int16_t requestedAmount, unsigned long *lastDirec
 
             microseconds = map(amount, -255, 0, 1050, 1470);
             break;
-
-        case MotorState::SwitchingBackward:
+*/
+/*        case MotorState::SwitchingBackward:
         case MotorState::SwitchingForward:
 
             // proceed with other direction if waiting time is done
@@ -145,7 +148,7 @@ static int CalculateMotorSpeed(int16_t requestedAmount, unsigned long *lastDirec
             }
 
             break; // return default us
-
+*/
         case MotorState::UnknownMotorState:
         default:
             /* code */

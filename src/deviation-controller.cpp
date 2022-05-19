@@ -2,7 +2,7 @@
 #include <Arduino.h>
 #include "configuration.h"
 
-const float Kp = 2/15.74f;
+const float Kp = 1/15.74f;
 
 
 void DeviationController_Init(void)
@@ -45,19 +45,25 @@ void DeviationController_CalcIndividualMotorPower(uint8_t requestedSpeed, uint16
     if(sum < 500)
     {
         // TODO improve find back to path
-        motorControlArray[0] = -80;
-        motorControlArray[1] = -80;
+        if(difference > 0){  // on the left side of the cable
+            motorControlArray[0] = 70;
+            motorControlArray[1] = 0;
+        }
+        else{  // on the right side of the cable
+            motorControlArray[0] = 0;
+            motorControlArray[1] = 70;
+        }
         return;
     }
 
     // big deviation => reduce speed, the bigger the deviation
-    if(absDifference > 600)
+    if(absDifference > 400)
     {
-        speed -= ((absDifference-600) / 4); // e.g. at difference of 1000 => -100 speed
+        speed -= ((absDifference-400) / 4); // e.g. at difference of 1000 => -100 speed
     }
 
 
-    int16_t steering = -(Kp * (float)difference);
-    motorControlArray[0] = speed + steering; 
-    motorControlArray[1] = speed - steering;
+    int16_t steering = (Kp * (float)difference);
+    motorControlArray[0] = speed + 0.5*steering; 
+    motorControlArray[1] = speed - 0.5*steering;
 }

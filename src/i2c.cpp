@@ -25,7 +25,10 @@ void I2C_Init() {
 #endif
         Display_Clear();
         Display_ShowText(15, 15, String("I2C slave init failed"));
-        while(1) delay(100);
+        while(res == false) {
+            delay(1000);
+            res = Wire1.begin((uint8_t)I2C_SLAVE_ADDR, SDA_PIN, SCL_PIN, 400000);
+        }
     }
 
     Wire1.onReceive(receiveData);
@@ -52,7 +55,7 @@ Command I2C_Handle()
 // do not perform time-consuming tasks inside this function,
 // do them elsewhere and simply read the data you wish to
 // send inside here.
-static void sendData(byte state, byte batteryLevel, byte speed) {
+static void sendData(void) {
 
     byte data [] = {state, batteryLevel, speed};
     Wire1.write(data, 3);
@@ -63,10 +66,11 @@ static void sendData(byte state, byte batteryLevel, byte speed) {
 // this function is registered as an event, see setup()
 static void receiveData(int howMany) {
 
-    if(Wire1.available()) {
+    while(Wire1.available()) {
         command = (Command)Wire1.read();
         Wire1.flush();
-        Serial.println("Data received");
+        Serial.print("Data received: ");
+        Serial.println(command);
     }
 }
 
