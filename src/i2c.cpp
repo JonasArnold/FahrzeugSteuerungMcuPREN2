@@ -47,7 +47,7 @@ Command I2C_Handle()
         command = Command::None;
         return command_out;
     }
-    return command;
+    return Command::None;
 }
 
 // function that runs whenever the master sends an empty packet.
@@ -56,9 +56,15 @@ Command I2C_Handle()
 // do them elsewhere and simply read the data you wish to
 // send inside here.
 static void sendData(void) {
-
     byte data [] = {state, batteryLevel, speed};
     Wire1.write(data, 3);
+    Serial.print("Data sent: [");
+    for (uint8_t i = 0; i < 3; i++)
+    {
+        Serial.print(data[i]);
+        if(i==2) { Serial.println("]"); }
+        else     { Serial.print(", "); }
+    }
 }
 
 // function that executes whenever a complete and valid packet
@@ -67,10 +73,16 @@ static void sendData(void) {
 static void receiveData(int howMany) {
 
     while(Wire1.available()) {
-        command = (Command)Wire1.read();
-        Wire1.flush();
+        int recieved = Wire1.read();
         Serial.print("Data received: ");
-        Serial.println(command);
+        Serial.println(recieved);
+        if      (recieved == 0) { command = Command::None; }
+        else if (recieved == 1) { command = Command::SpeedDown; }
+        else if (recieved == 2) { command = Command::SpeedUp; }
+        else if (recieved == 3) { command = Command::Stop; }
+        else { 
+            Serial.println("Unknown I2C command arrived");
+        }
     }
 }
 
