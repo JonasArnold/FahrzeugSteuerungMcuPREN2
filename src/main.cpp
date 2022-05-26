@@ -11,6 +11,15 @@
 #include "deviation-controller.h"
 #include "state-machine.h"
 
+#ifdef WIFI_ENABLED
+  #include <ESPAsyncWebServer.h>
+  #include <AsyncElegantOTA.h>
+  #include "my-wifi.h"
+  #include "credentials.h"
+  // Create AsyncWebServer object on port 80
+  AsyncWebServer server(80);
+#endif
+
 int16_t rpmL, rpmR;
 uint8_t speedVal, batPct;
 int16_t steeringVal;
@@ -54,6 +63,21 @@ void setup() {
   Display_ShowInitText(String("Init state machine..."));
   StateMachine_Init();
   delay(100);
+
+#ifdef WIFI_ENABLED
+  Display_ShowInitText(String("Init WiFi..."));
+  MyWiFi_Init();
+  bool connected = MyWiFi_Connect(WIFI_SSID, WIFI_PASSPHRASE, 10);
+  if(connected) { Display_ShowInitText("WiFi: " + MyWiFi_GetIPv4String()); }
+  else {Display_ShowInitText(String("Could not connect to WiFi"));}
+  delay(1000);
+
+  // Start ElegantOTA
+  AsyncElegantOTA.setID("PREN_T9_ESP32");
+  AsyncElegantOTA.begin(&server);
+  // Start server
+  server.begin();
+#endif
 
 
   Display_ShowInitText(String("Init done"));
