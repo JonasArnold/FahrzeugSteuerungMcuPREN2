@@ -12,9 +12,9 @@
 #include "state-machine.h"
 
 #ifdef WIFI_ENABLED
+  #include "EspWiFi.h"
   #include <ESPAsyncWebServer.h>
   #include <AsyncElegantOTA.h>
-  #include "my-wifi.h"
   #include "credentials.h"
   // Create AsyncWebServer object on port 80
   AsyncWebServer server(80);
@@ -66,9 +66,9 @@ void setup() {
 
 #ifdef WIFI_ENABLED
   Display_ShowInitText(String("Init WiFi..."));
-  MyWiFi_Init();
-  bool connected = MyWiFi_Connect(WIFI_SSID, WIFI_PASSPHRASE, 10);
-  if(connected) { Display_ShowInitText("WiFi: " + MyWiFi_GetIPv4String()); }
+  EspWiFi_Init();
+  bool connected = EspWiFi_Connect(WIFI_SSID, WIFI_PASSPHRASE, 10);
+  if(connected) { Display_ShowInitText("WiFi: " + EspWiFi_GetIPv4String()); }
   else {Display_ShowInitText(String("Could not connect to WiFi"));}
   delay(1000);
 

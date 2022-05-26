@@ -1,0 +1,3 @@
+[submodule "lib/EspPlatformioLib"]
+	path = lib/EspPlatformioLib
+	url = git@github.com:JonasArnold/EspPlatformioLib.git
