@@ -97,7 +97,7 @@ void loop() {
     // set to normal speed if device is ready or stopped
     if(currentState == DeviceState::Ready || currentState == DeviceState::Stopped)
     {
-      StateMachine_SetCurrentState(DeviceState::RedSpeed);
+      StateMachine_SetCurrentState(DeviceState::NormSpeed);
     }
     // stop device if the button is pressed during drive
     if(currentState == DeviceState::NormSpeed || currentState ==  DeviceState::RedSpeed)

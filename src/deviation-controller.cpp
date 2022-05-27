@@ -12,8 +12,8 @@ float y_lf_1 = 0;
 float y_lf = 0;
 
 // values for controller
-const float Kp = 1.0f/50.0f;
-const float Td = 50.0f;
+const float Kp = 1.0f/3.0f;
+const float Td = 0.5f;
 const float N = 5.0f;
 float u_k = 0;
 float e_k = 0;
