@@ -95,7 +95,7 @@ void DeviationController_CalcIndividualMotorPower(uint8_t requestedSpeed, uint16
     // compute the error from the low pass filtered signal
     ref = requestedSpeed;
 	e_k = ref - difference;
-		
+
 	// proportinal term
 	u_p = Kp * e_k;
 
@@ -110,18 +110,17 @@ void DeviationController_CalcIndividualMotorPower(uint8_t requestedSpeed, uint16
     e_k_1 = e_k;
     u_d_k_1 = u_d;
 
-
     // cable lost
     if(sum < 500)
     {
         // TODO improve find back to path
         if(difference > 0){  // on the left side of the cable
-            motorControlArray[0] = 15;
-            motorControlArray[1] = 80;
+            motorControlArray[0] = 30;
+            motorControlArray[1] = 100;
         }
         else{  // on the right side of the cable
-            motorControlArray[0] = 80;
-            motorControlArray[1] = 15;
+            motorControlArray[0] = 100;
+            motorControlArray[1] = 30;
         }
         return;
     }
