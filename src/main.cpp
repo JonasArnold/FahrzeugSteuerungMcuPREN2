@@ -20,7 +20,7 @@
   AsyncWebServer server(80);
 #endif
 
-int16_t rpmL, rpmR;
+int16_t MMpS_Left, MMpS_Right;
 uint8_t speedVal, batPct;
 int16_t steeringVal;
 bool connected;
@@ -108,12 +108,11 @@ void loop() {
   }
 
   /* HANDLE INPUTS */
-  Motors_Handle();
-  rpmL = int16_t(Motors_GetMMpSL());
-  rpmR = int16_t(Motors_GetMMpSR());
+  MMpS_Left = Motors_GetMMpSL();
+  MMpS_Right = Motors_GetMMpSR();
+  byte informationalSpeed = (MMpS_Left + MMpS_Right) / 2;  // calculate speed 
 
   batPct = BatteryMonitoring_GetPercent();
-  //Helpers_SerialPrintLnAndVal("Battery: ", batPct);
 
   // get remote control data (motor test)
   speedVal = RemoteControl_GetThrottle();
@@ -124,7 +123,7 @@ void loop() {
   // update outgoing data (state / batteryLevel / speed)
   I2C_SetBatteryLevel((byte)batPct);
   I2C_SetDeviceState((byte)StateMachine_GetCurrentState());
-  I2C_SetSetSpeed((byte)StateMachine_GetSpeedApropriateToState());  
+  I2C_SetSetSpeed(informationalSpeed);  
 #ifdef COMMUNICATION_ENABLED
   Command driveCommand = I2C_Handle();
   switch (driveCommand)
@@ -146,17 +145,21 @@ void loop() {
   }
 #endif
 
-  // read sensor values and set motor speed 
-  deviationValue = CoilSensor_ReadDeviation();
-  //Helpers_SerialPrintLnAndVal("Read sensor deviation value: ", deviationValue);
+  /* HANDLE COIL SENSOR VALUES */
+  // read individual sensor values
+  CoilSensor_ReadIndividualValues(sensorValues);
+  // calculate deviation 
+  deviationValue = (int16_t)sensorValues[0] - (int16_t)sensorValues[1];
+
 #ifdef REMOTE_CONTROL_ENABLED
+  // set motor speed according to remote control
   Motors_ForwardAndSteering(speedVal, steeringVal); 
 #endif
 
-
-  CoilSensor_ReadIndividualValues(sensorValues);
 #ifdef AUTOMATED_DRIVING_ENABLED
+  // let deviation controller calculate
   DeviationController_CalcIndividualMotorPower(StateMachine_GetSpeedApropriateToState(), sensorValues, motorValues);
+  // set power for motor
   Motors_LeftRightIndividual(motorValues[0], motorValues[1]);
 #endif
 

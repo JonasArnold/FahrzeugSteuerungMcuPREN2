@@ -18,13 +18,15 @@ const int rpm_meter_L_Pin = 16;
 const int rpm_meter_R_Pin = 2;
 
 // vars turn counting
-unsigned int flank_count_l, flank_count_r;
-const int factor = 60/25;                   // (60 secs / min) *  [Amount of flanks per full revolution]
-const int millisBetweenRpmCount = 1000;     // calculate rpm every x [ms]
-unsigned long lastRpmCalculation = 0;       // stores last rpm calculation millis
-const int wheelPerimeter = 408;             // [mm] perimeter of the wheel
-const int wheelRadius = 65;                 // [mm] radius of wheel
-const float transmissionRatio = 1.8f;       // factor of transmission between motor and wheel
+//unsigned int flank_count_l, flank_count_r;
+long lastFlankLMillis, lastFlankRMillis;        // last time there was an impulse from the wheel 
+const float revolutionPerImpulse = 1 / 25;      // revolution amount per impulse from the wheel
+const int factor = 60 * revolutionPerImpulse;   // (60 secs / min) *  [Amount of flanks per full revolution]
+//const int millisBetweenRpmCount = 1000;         // calculate rpm every x [ms]
+//unsigned long lastRpmCalculation = 0;           // stores last rpm calculation millis
+const int wheelPerimeter = 408;                 // [mm] perimeter of the wheel
+const int wheelRadius = 65;                     // [mm] radius of wheel
+const float transmissionRatio = 1.8f;           // factor of transmission between motor and wheel
 
 // vars motor
 const int forwardBackwardDelayTime = 1000;  // [ms] delay to allow esc to switch from forward to backward rotation
@@ -56,7 +58,11 @@ void Motors_Init()
     // set to 0 and wait 5 seconds (let ESC initialize)
     motorL.write(DEFAULT_US);
     motorR.write(DEFAULT_US);
-    delay(5000);
+    delay(2000);
+
+    // reset variables
+    lastFlankLMillis = 0;
+    lastFlankRMillis = 0;
 
     // attach interrupts for rpm meters
     attachInterrupt(digitalPinToInterrupt(rpm_meter_L_Pin), ISR_RPM_L, RISING);
@@ -72,6 +78,7 @@ void Motors_Deinit()
 
 void Motors_Handle()
 {
+    /* REPLACED WITH CALCULATION IN ISR
     unsigned long now = millis();
     // perform rpm calculation if it is overdue
     if(now - lastRpmCalculation > millisBetweenRpmCount)
@@ -84,6 +91,7 @@ void Motors_Handle()
         // set now as last rpm calculation time
         lastRpmCalculation = now;
     }
+    */
 }
 
 
@@ -186,11 +194,15 @@ void Motors_LeftRightIndividual(int16_t left, int16_t right)
 /* ISR */
 void ISR_RPM_L(void)
 {
-    flank_count_l++;
+    unsigned long now = millis();
+    RPM_L = factor * (1000 / (now-lastFlankLMillis)); // calculate current RPM
+    lastFlankLMillis = now; // store current time for next calculation
 }
 void ISR_RPM_R(void)
 {
-    flank_count_r++;
+    unsigned long now = millis();
+    RPM_R = factor * (1000 / (now-lastFlankRMillis)); // calculate current RPM
+    lastFlankRMillis = now; // store current time for next calculation
 }
 
 
@@ -206,26 +218,26 @@ int16_t Motors_GetRpmR()
 
 int16_t ConvertRpmToMMpS(int16_t rpm)
 {
-    return (int16_t)(rpm / transmissionRatio) * ((float)wheelRadius / (60.0f));
+    return (int16_t)(rpm / transmissionRatio) * ((float)wheelPerimeter / (60.0f));
 }
 
 int16_t Motors_GetMMpSL()
 {
-    int16_t mps = ConvertRpmToMMpS(RPM_L);
+    int16_t mmps = ConvertRpmToMMpS(RPM_L);
     if(stateMotorL == MotorState::Backward)
     {
-        mps = -1 * mps;
+        mmps = -1 * mmps;
     }
-    return mps;
+    return mmps;
 }
 
 int16_t Motors_GetMMpSR()
 {
-    int16_t mps = ConvertRpmToMMpS(RPM_R);
+    int16_t mmps = ConvertRpmToMMpS(RPM_R);
     if(stateMotorR == MotorState::Backward)
     {
-        mps = -1 * mps;
+        mmps = -1 * mmps;
     }
-    return mps;
+    return mmps;
 }
 
