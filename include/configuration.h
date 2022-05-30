@@ -11,10 +11,10 @@
 #define AUTOMATED_DRIVING_ENABLED
 #define WIFI_ENABLED
 
-/* SPEED LEVELS 0...255 */
+/* SPEED LEVELS 0...1000 mm/s */
 #define SPEED_HALT 0
-#define SPEED_SLOW 60 // 60
-#define SPEED_FAST 120
+#define SPEED_SLOW 200
+#define SPEED_FAST 500
 
 #endif
 
