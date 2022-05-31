@@ -5,19 +5,22 @@
 
 // cycle time
 const float T_ms = 0.5f;
+// maximum sensor value (absolute)
+const int maxSensorVal = 1700;   // maximum sensor value at ally
+const int valMaxSteer = 1500;    // maximum steering required at this sensor value
 
 // values for lowpass filter
 const float KpLF = 1.0f;
-const float TauLF = 2.0f;
+const float TauLF = 0.5f;
 float y_lf_l_1 = 0;         // last value of low pass filtered sensor signal LEFT
 float y_lf_r_1 = 0;         // last value of low pass filtered sensor signal RIGHT
 float y_lf_l = 0;           // current value of low pass filtered sensor signal LEFT
 float y_lf_r = 0;           // current value of low pass filtered sensor signal LEFT
 
 // values for controller
-const float Kp = 0.125f;
-const float Td = 0.3f;
-const float N = 5.0f;
+const float Kp = 1.0f;
+const float Td = 0.5f;
+const float N = 10.0f;
 float u_k = 0;
 float e_k = 0;
 float u_p = 0;
@@ -101,7 +104,7 @@ void DeviationController_CalcIndividualMotorPower(uint8_t requestedSpeed, uint16
     // calculate difference (deviation from middle) and sum
     int16_t difference = y_lf_l - y_lf_r; // difference > 0 ==> left of cable
     uint16_t sum = y_lf_l + y_lf_r;
-    int16_t speed = (int16_t)requestedSpeed;
+    int16_t speed = map(requestedSpeed, 0, 1000, 0, 255);
 
     // cable lost => drive way back
     if(sum < 500)
@@ -133,10 +136,10 @@ void DeviationController_CalcIndividualMotorPower(uint8_t requestedSpeed, uint16
 
     /* LIMITER */
     // calculate motor power, limit motor values  
-    motorControlArray[0] = speed * (1.0 + (u_k/100.0  * 0.4));
+    motorControlArray[0] = speed * ( 0.5 + (u_k/100.0 ));
     if(motorControlArray[0] < 50) { motorControlArray[0] = 50; }
     else if(motorControlArray[0] > 255) { motorControlArray[0] = 255; };
-    motorControlArray[1] = speed * (1 - (u_k/100.0  * 0.4));
+    motorControlArray[1] = speed/4 * ( 0.5 + (u_k/100.0 ));
     if(motorControlArray[1] < 50) { motorControlArray[1] = 50; }
     else if(motorControlArray[1] > 255) { motorControlArray[1] = 255; };
     

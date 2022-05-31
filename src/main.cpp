@@ -149,7 +149,7 @@ void loop() {
   // read individual sensor values
   CoilSensor_ReadIndividualValues(sensorValues);
   // calculate deviation 
-  deviationValue = (int16_t)sensorValues[0] - (int16_t)sensorValues[1];
+  deviationValue = (int16_t)((uint16_t)sensorValues[0]) - (int16_t)((uint16_t)sensorValues[1]);
 
 #ifdef REMOTE_CONTROL_ENABLED
   // set motor speed according to remote control
@@ -166,7 +166,7 @@ void loop() {
   // update display
   Display_Clear();
   Display_SetupBase();
-  Display_UpdateNewValues(StateMachine_GetCurrentState(), batPct, connected, deviationValue, GetUk(), sensorValues[0], sensorValues[1], GetUp(), GetUd());
+  Display_UpdateNewValues(StateMachine_GetCurrentState(), batPct, connected, deviationValue, GetUk(), (int)sensorValues[0], (int)sensorValues[1], GetUp(), GetUd());
 
   delayMicroseconds(400);
 }
