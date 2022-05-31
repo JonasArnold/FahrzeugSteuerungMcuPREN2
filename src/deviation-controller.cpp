@@ -78,7 +78,7 @@ int16_t GetUd()
     return (int16_t)u_d;
 }
 
-void DeviationController_CalcIndividualMotorPower(uint8_t requestedSpeed, uint16_t *sensorValuesArray, int16_t *motorControlArray)
+void DeviationController_CalcIndividualMotorPower(uint16_t requestedSpeed, uint16_t *sensorValuesArray, int16_t *motorControlArray)
 {
     // requested speed zero => directly return zero and reset all stored values, do not calculate anything 
     if(requestedSpeed == 0)
@@ -134,13 +134,23 @@ void DeviationController_CalcIndividualMotorPower(uint8_t requestedSpeed, uint16
     e_k_1 = e_k;
     u_d_k_1 = u_d;
 
-    /* LIMITER */
-    // calculate motor power, limit motor values  
-    motorControlArray[0] = speed * ( 0.5 + (u_k/100.0 ));
-    if(motorControlArray[0] < 50) { motorControlArray[0] = 50; }
+    // calculate motor power
+    int rangeAbove = 255 - speed;
+    int rangeBelow = speed;
+
+    if(u_k > 0){
+        motorControlArray[0] = speed - (((float)u_k/valMaxSteer) * rangeBelow);  
+        motorControlArray[1] = speed + (((float)u_k/valMaxSteer) * rangeAbove);  
+    }
+    else{
+        motorControlArray[0] = speed - (((float)u_k/valMaxSteer) * rangeAbove);  
+        motorControlArray[1] = speed + (((float)u_k/valMaxSteer) * rangeBelow);  
+    }
+
+    // limit
+    if(motorControlArray[0] < 0) { motorControlArray[0] = 0; }
     else if(motorControlArray[0] > 255) { motorControlArray[0] = 255; };
-    motorControlArray[1] = speed/4 * ( 0.5 + (u_k/100.0 ));
-    if(motorControlArray[1] < 50) { motorControlArray[1] = 50; }
+    if(motorControlArray[1] < 0) { motorControlArray[1] = 0; }
     else if(motorControlArray[1] > 255) { motorControlArray[1] = 255; };
     
     return;
