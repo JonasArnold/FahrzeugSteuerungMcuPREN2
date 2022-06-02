@@ -3,50 +3,47 @@
 #include "configuration.h"
 #include "helpers.h"
 
-// cycle time
-const float T_ms = 0.5f;
 // maximum sensor value (absolute)
 const int maxSensorVal = 1700;   // maximum sensor value at ally
-const int valMaxSteer = 1500;    // maximum steering required at this sensor value
-
-// values for lowpass filter
-const float KpLF = 1.0f;
-const float TauLF = 0.5f;
-float y_lf_l_1 = 0;         // last value of low pass filtered sensor signal LEFT
-float y_lf_r_1 = 0;         // last value of low pass filtered sensor signal RIGHT
-float y_lf_l = 0;           // current value of low pass filtered sensor signal LEFT
-float y_lf_r = 0;           // current value of low pass filtered sensor signal LEFT
+const int valMaxSteer = 1500;    // maximum steering required at this sensor value 200
 
 // values for controller
-const float Kp = 1.0f;
-const float Td = 0.5f;
-const float N = 10.0f;
+const float Kp = 1.2f;
+const float Td = 1.5f;  // 8
+const float Ti = 0.1f;
+const float u_min = -valMaxSteer;
+const float u_max = valMaxSteer;
+const float N = 5.0f;  // 5
+float Tr = 0; 
+float u_aw = 0;
 float u_k = 0;
+float u_k_sat = 0;
 float e_k = 0;
 float u_p = 0;
 float u_d = 0;
 float ad = 0;
 float bd = 0;
+float bi = 0;
 float e_k_1 = 0;
 float u_d_k_1 = 0;
+float u_i_k_1 = 0;
 
 void DeviationController_Init(void)
 {
-    // reset values
-    y_lf_l_1 = 0;
-    y_lf_r_1 = 0;
-    y_lf_l = 0;
-    y_lf_r = 0;
     u_k = 0;
     e_k = 0;
     u_p = 0;
     u_d = 0;
     e_k_1 = 0;
     u_d_k_1 = 0;
+    u_i_k_1 = 0;
+    u_aw = 0;
 
     // calculated constant parameters
-    ad = Td / (Td + N * T_ms);             // 0.07407407407407407407407407407407
-    bd = (Kp * N * Td) / (Td + N * T_ms);  // 0.0462962962962962962962962962963
+    bi = Kp * T_MS / (2*Ti);
+    ad = Td / (Td + N * T_MS);             // 0.07407407407407407407407407407407
+    bd = (Kp * N * Td) / (Td + N * T_MS);  // 0.0462962962962962962962962962963
+    Tr = sqrt(Ti * Td);
 } 
 
 
@@ -85,25 +82,16 @@ void DeviationController_CalcIndividualMotorPower(uint16_t requestedSpeed, uint1
     {
         motorControlArray[0] = 0;
         motorControlArray[1] = 0;
-        y_lf_l_1 = 0;
-        y_lf_r_1 = 0;
+        u_i_k_1	= 0;
         u_d_k_1 = 0;
         e_k_1 = 0;
         return;
     }
     
 
-    /* PT1 lowpass filter on sensor values */
-    // calculate current values
-    y_lf_l = y_lf_l_1 + (KpLF * (float)sensorValuesArray[0] - y_lf_l_1) * (T_ms/TauLF);
-    y_lf_r = y_lf_r_1 + (KpLF * (float)sensorValuesArray[1] - y_lf_r_1) * (T_ms/TauLF);
-    // store old values
-    y_lf_l_1 = y_lf_l;
-    y_lf_r_1 = y_lf_r;
-
     // calculate difference (deviation from middle) and sum
-    int16_t difference = y_lf_l - y_lf_r; // difference > 0 ==> left of cable
-    uint16_t sum = y_lf_l + y_lf_r;
+    int16_t difference = sensorValuesArray[0] - sensorValuesArray[1]; // difference > 0 ==> left of cable
+    uint16_t sum = sensorValuesArray[0] + sensorValuesArray[1];
     int16_t speed = map(requestedSpeed, 0, 1000, 0, 255);
 
     // cable lost => drive way back
@@ -129,7 +117,22 @@ void DeviationController_CalcIndividualMotorPower(uint16_t requestedSpeed, uint1
     // derivative term with filter
 	u_d	= ad * u_d_k_1 + bd * (e_k - e_k_1);
     // total of PD values
-    u_k = u_p + u_d;
+    u_k = u_p + u_d;// + u_i_k_1;
+
+    // saturation
+	u_k_sat = u_k;
+	if(u_k_sat > u_max){
+        u_k_sat = u_max;
+    }
+    else if(u_k_sat < u_min){
+        u_k_sat = u_min;
+    }
+
+    u_aw = (T_MS/Tr) * (u_k_sat - u_k);
+		
+	// integral term (Trapezregel)
+	u_i_k_1 = u_i_k_1 + bi * (e_k + e_k_1) + u_aw;
+
     // store old values
     e_k_1 = e_k;
     u_d_k_1 = u_d;

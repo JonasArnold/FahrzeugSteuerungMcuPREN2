@@ -166,7 +166,7 @@ void loop() {
   // update display
   Display_Clear();
   Display_SetupBase();
-  Display_UpdateNewValues(StateMachine_GetCurrentState(), batPct, connected, deviationValue, GetUk(), (int)sensorValues[0], (int)sensorValues[1], GetUp(), GetUd());
+  Display_UpdateNewValues(StateMachine_GetCurrentState(), batPct, connected, deviationValue, GetUk(), (int)sensorValues[0], (int)sensorValues[1], MMpS_Left, MMpS_Right);
 
-  delayMicroseconds(400);
+  delayMicroseconds(200);
 }

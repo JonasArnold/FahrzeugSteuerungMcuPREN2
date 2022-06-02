@@ -83,8 +83,8 @@ void Display_SetupBase()
   display.drawString(67, 19, "u_k");
   display.drawString(3, 35, "C L");
   display.drawString(67, 35, "C R");
-  display.drawString(3, 51, "u_p");
-  display.drawString(67, 51, "u_d");
+  display.drawString(3, 51, "sp L");
+  display.drawString(67, 51, "sp R");
 
   display.display();
 #endif

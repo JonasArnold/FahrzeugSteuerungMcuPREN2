@@ -14,7 +14,10 @@
 /* SPEED LEVELS 0...1000 mm/s */
 #define SPEED_HALT 0
 #define SPEED_SLOW 400
-#define SPEED_FAST 500
+#define SPEED_FAST 400
+
+// cycle time
+const float T_MS = 0.3f;
 
 #endif
 
