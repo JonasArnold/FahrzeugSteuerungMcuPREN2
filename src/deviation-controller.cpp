@@ -8,8 +8,8 @@ const int maxSensorVal = 1700;   // maximum sensor value at ally
 const int valMaxSteer = 1000;    // maximum steering required at this sensor value 200
 
 // values for controller
-const float Kp = 1.2f;
-const float Td = 6.0f;  // 8
+const float Kp = 1.1f;
+const float Td = 8.0f;  // 8
 const float Ti = 0.1f;
 const float u_min = -valMaxSteer;
 const float u_max = valMaxSteer;
