@@ -5,20 +5,20 @@
 
 // maximum sensor value (absolute)
 const int maxSensorVal = 1700;   // maximum sensor value at ally
-const int valMaxSteer = 1500;    // maximum steering required at this sensor value 200
+const int valMaxSteer = 1000;    // maximum steering required at this sensor value 200
 
 // values for controller
 const float Kp = 1.2f;
-const float Td = 1.5f;  // 8
+const float Td = 6.0f;  // 8
 const float Ti = 0.1f;
 const float u_min = -valMaxSteer;
 const float u_max = valMaxSteer;
-const float N = 5.0f;  // 5
+const float N = 10.0f;  // 5
 float Tr = 0; 
 float u_aw = 0;
 float u_k = 0;
 float u_k_sat = 0;
-float e_k = 0;
+float e_k = 0;  
 float u_p = 0;
 float u_d = 0;
 float ad = 0;
@@ -92,10 +92,10 @@ void DeviationController_CalcIndividualMotorPower(uint16_t requestedSpeed, uint1
     // calculate difference (deviation from middle) and sum
     int16_t difference = sensorValuesArray[0] - sensorValuesArray[1]; // difference > 0 ==> left of cable
     uint16_t sum = sensorValuesArray[0] + sensorValuesArray[1];
-    int16_t speed = map(requestedSpeed, 0, 1000, 0, 255);
+    int16_t speed = map(requestedSpeed, 0, 1000, 0, 200);
 
     // cable lost => drive way back
-    if(sum < 500)
+    if(sum < 10)
     {
         // TODO improve find back to path
         if(difference > 0){  // on the left side of the cable
@@ -138,7 +138,7 @@ void DeviationController_CalcIndividualMotorPower(uint16_t requestedSpeed, uint1
     u_d_k_1 = u_d;
 
     // calculate motor power
-    int rangeAbove = 255 - speed;
+    int rangeAbove = 200 - speed;
     int rangeBelow = speed;
 
     if(u_k > 0){
@@ -152,9 +152,9 @@ void DeviationController_CalcIndividualMotorPower(uint16_t requestedSpeed, uint1
 
     // limit
     if(motorControlArray[0] < 0) { motorControlArray[0] = 0; }
-    else if(motorControlArray[0] > 255) { motorControlArray[0] = 255; };
+    else if(motorControlArray[0] > 200) { motorControlArray[0] = 200; };
     if(motorControlArray[1] < 0) { motorControlArray[1] = 0; }
-    else if(motorControlArray[1] > 255) { motorControlArray[1] = 255; };
+    else if(motorControlArray[1] > 200) { motorControlArray[1] = 200; };
     
     return;
 }
