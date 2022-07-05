@@ -110,7 +110,7 @@ void loop() {
   /* HANDLE INPUTS */
   MMpS_Left = Motors_GetMMpSL();
   MMpS_Right = Motors_GetMMpSR();
-  byte informationalSpeed = (MMpS_Left + MMpS_Right) / 2;  // calculate speed 
+  byte informationalSpeed = (MMpS_Left + MMpS_Right) / 20;  // calculate speed 
 
   batPct = BatteryMonitoring_GetPercent();
 

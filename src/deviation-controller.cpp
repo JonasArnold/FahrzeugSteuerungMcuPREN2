@@ -8,7 +8,7 @@ const int maxSensorVal = 1700;   // maximum sensor value at ally
 const int valMaxSteer = 1000;    // maximum steering required at this sensor value 200
 
 // values for controller
-const float Kp = 1.1f;
+const float Kp = 0.7f;
 const float Td = 8.0f;  // 8
 const float Ti = 0.1f;
 const float u_min = -valMaxSteer;
@@ -27,6 +27,7 @@ float bi = 0;
 float e_k_1 = 0;
 float u_d_k_1 = 0;
 float u_i_k_1 = 0;
+int16_t lastDifferenceBeforeLost = 0;
 
 void DeviationController_Init(void)
 {
@@ -94,17 +95,22 @@ void DeviationController_CalcIndividualMotorPower(uint16_t requestedSpeed, uint1
     uint16_t sum = sensorValuesArray[0] + sensorValuesArray[1];
     int16_t speed = map(requestedSpeed, 0, 1000, 0, 200);
 
+    // store last difference if any cable has a value
+    if(sensorValuesArray[0] > 0 && sensorValuesArray[1] > 0)
+    {
+        lastDifferenceBeforeLost = difference;
+    }
     // cable lost => drive way back
     if(sum < 10)
     {
-        // TODO improve find back to path
-        if(difference > 0){  // on the left side of the cable
-            motorControlArray[0] = 30;
-            motorControlArray[1] = 100;
+        // turn back to the cable 
+        if(lastDifferenceBeforeLost > 0){  // on the left side of the cable
+            motorControlArray[0] = 0;
+            motorControlArray[1] = 190;
         }
         else{  // on the right side of the cable
-            motorControlArray[0] = 100;
-            motorControlArray[1] = 30;
+            motorControlArray[0] = 190;
+            motorControlArray[1] = 0;
         }
         return;
     }
